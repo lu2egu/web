@@ -909,14 +909,14 @@ const SATELLITES = {
     }
 };
 
-// Inicializamos inmediatamente con un pase estimado de respaldo (a 45 minutos) para evitar bloqueos
+// Inicializamos inmediatamente con un pase estimado de respaldo para evitar bloqueos
 window.proximoPaseISSData = {
     inicio: new Date(Date.now() + 45 * 60 * 1000),
     fin: new Date(Date.now() + 55 * 60 * 1000),
     maxEl: 52
 };
 
-// Función no bloqueante para intentar calcular el próximo pase real en segundo plano
+// Función no bloqueante para calcular el próximo pase real en segundo plano
 function calcularProximoPaseISSAsync() {
     setTimeout(() => {
         try {
@@ -930,8 +930,8 @@ function calcularProximoPaseISSAsync() {
 
             let tiempoActual = new Date();
             let t = new Date(tiempoActual.getTime());
-            let pasoSimulacionMs = 60 * 1000; // Saltos de 1 minuto para mayor velocidad
-            let limiteMaxMs = Date.now() + (24 * 60 * 60 * 1000); // Buscar en las próximas 24 horas
+            let pasoSimulacionMs = 60 * 1000; // Saltos de 1 minuto
+            let limiteMaxMs = Date.now() + (24 * 60 * 60 * 1000); // 24 horas
 
             let enPase = false;
             let maxElPase = 0;
@@ -958,7 +958,6 @@ function calcularProximoPaseISSAsync() {
                         if (enPase) {
                             finPase = new Date(t.getTime());
                             if (maxElPase >= 15 && inicioPase.getTime() > tiempoActual.getTime()) {
-                                // Reemplazamos con el pase real calculado con precisión orbital
                                 window.proximoPaseISSData = {
                                     inicio: inicioPase,
                                     fin: finPase,
@@ -974,12 +973,12 @@ function calcularProximoPaseISSAsync() {
                 t = new Date(t.getTime() + pasoSimulacionMs);
             }
         } catch (e) {
-            console.warn("Usando estimación orbital de respaldo predeterminada.", e);
+            console.warn("Usando estimación orbital de respaldo.", e);
         }
     }, 100);
 }
 
-// Actualiza el texto dinámicamente cada segundo en el DOM
+// Actualiza el texto dinámicamente cada segundo en el DOM inyectando explícitamente el valor
 function actualizarTextoCountdown() {
     const countdownEl = document.getElementById('iss-countdown');
     if (!countdownEl) return;
@@ -1001,7 +1000,7 @@ function actualizarTextoCountdown() {
             // Si pasó, adelantamos provisionalmente 92 minutos (período ISS) hasta recalcular
             window.proximoPaseISSData = {
                 inicio: new Date(ahora.getTime() + 92 * 60 * 1000),
-                fin: new Date(ahora.getTime()  + 102 * 60 * 1000),
+                fin: new Date(ahora.getTime() + 102 * 60 * 1000),
                 maxEl: 45
             };
             calcularProximoPaseISSAsync();
@@ -1015,7 +1014,7 @@ function actualizarTextoCountdown() {
 
     const horaLocalStr = inicio.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
     
-    // Inyección explícita e inmediata en el elemento HTML
+    // Inyección explícita y directa requerida en el elemento HTML
     countdownEl.textContent = `En ${horas}h ${minutos}m ${segundos}s (A las ${horaLocalStr} - Máx El: ${window.proximoPaseISSData.maxEl.toFixed(0)}°)`;
 }
 
@@ -1034,7 +1033,7 @@ function updateRealSatellites() {
     actualizarTextoCountdown();
 
     // 1. Procesar ISS (Posición actual y Doppler físico)
-    if (SATELLITES.iss.tle1 && SATELLitesISS = SATELLITES.iss) { // Corrección segura de referencia
+    if (SATELLITES.iss.tle1 && SATELLITES.iss.tle2) {
         const satrec = satellite.twoline2satrec(SATELLITES.iss.tle1, SATELLITES.iss.tle2);
         const positionAndVelocity = satellite.propagate(satrec, now);
         
