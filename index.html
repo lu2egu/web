@@ -48,7 +48,7 @@
         }
 
         .glass-panel {
-            background: rgba(17, 24, 39, 0.75);
+            background: rgba(17, 24, 39, 0.8);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -148,8 +148,8 @@
     <!-- MAIN CONTENT GRID -->
     <main class="max-w-7xl mx-auto w-full px-4 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6 flex-grow items-start">
 
-        <!-- SECCIÓN IZQUIERDA: TARJETA QSL ÚNICA (UNIFICADA) -->
-        <section class="lg:col-span-7 flex flex-col gap-4">
+        <!-- SECCIÓN IZQUIERDA: TARJETA QSL DIGITAL COMPACTA -->
+        <section class="lg:col-span-7 flex flex-col gap-3.5">
             
             <div class="flex items-center justify-between no-print">
                 <div class="flex items-center gap-2">
@@ -157,78 +157,70 @@
                     <h2 class="text-lg font-bold text-white tracking-wide">Tarjeta QSL Digital de Estación</h2>
                 </div>
                 <span class="text-xs text-emerald-400 flex items-center gap-1 font-mono">
-                    <i class="fa-solid fa-check-circle"></i> Todos los datos en una sola vista
+                    <i class="fa-solid fa-check-circle"></i> Formato clásico compacto
                 </span>
             </div>
 
-            <!-- TARJETA QSL UNIFICADA DE CARA ÚNICA -->
+            <!-- TARJETA QSL TRADICIONAL COMPACTA -->
             <div id="print-area" class="w-full">
-                <div class="qsl-printable glass-panel glass-panel-glow p-5 sm:p-6 rounded-2xl border-2 border-cyan-500/40 relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-950 to-cyan-950/40 flex flex-col justify-between gap-4">
+                <div class="qsl-printable glass-panel glass-panel-glow p-4 sm:p-5 rounded-2xl border-2 border-cyan-500/40 relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-950 to-cyan-950/40 flex flex-col justify-between gap-3">
                     
-                    <!-- MARCAS DE AGUA DE FONDO (RADIO Y SATÉLITE) -->
-                    <div class="absolute -right-6 -bottom-6 opacity-10 pointer-events-none text-cyan-400">
-                        <i class="fa-solid fa-walkie-talkie text-[210px] sm:text-[250px]"></i>
+                    <!-- MARCA DE AGUA DE FONDO (RADIO) -->
+                    <div class="absolute -right-4 -bottom-4 opacity-10 pointer-events-none text-cyan-400">
+                        <i class="fa-solid fa-walkie-talkie text-[180px]"></i>
                     </div>
-                    <div class="absolute right-12 top-6 opacity-15 pointer-events-none text-goldAccent">
-                        <i class="fa-solid fa-satellite text-[110px] sm:text-[140px] -rotate-12"></i>
-                    </div>
-                    <div class="absolute top-0 right-0 w-48 h-48 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                    <div class="absolute top-0 right-0 w-36 h-36 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
                     <!-- HEADER QSL -->
-                    <div class="flex justify-between items-start z-10 border-b border-cyan-500/20 pb-3">
+                    <div class="flex justify-between items-start z-10 border-b border-cyan-500/20 pb-2">
                         <div>
-                            <span class="text-[10px] font-bold tracking-widest text-cyan-400 uppercase">REPÚBLICA ARGENTINA &bull; RADIOAFICIONADO</span>
-                            <div class="text-4xl sm:text-5xl font-black font-mono tracking-wider text-white glow-text mt-0.5">LU2EGU</div>
+                            <span class="text-[9px] font-bold tracking-widest text-cyan-400 uppercase">REPÚBLICA ARGENTINA &bull; RADIOAFICIONADO</span>
+                            <div class="text-3xl sm:text-4xl font-black font-mono tracking-wider text-white glow-text leading-tight">LU2EGU</div>
                         </div>
                         <div class="text-right">
-                            <span class="inline-block px-3 py-1 bg-goldAccent/10 border border-goldAccent/40 text-goldAccent font-mono text-xs sm:text-sm font-bold rounded-lg shadow-sm">
+                            <span class="inline-block px-2.5 py-0.5 bg-goldAccent/10 border border-goldAccent/40 text-goldAccent font-mono text-xs font-bold rounded-lg shadow-sm">
                                 GRID: FF96xm
                             </span>
-                            <p class="text-[11px] text-gray-300 font-medium mt-1">Ramallo, Buenos Aires</p>
+                            <p class="text-[10px] text-gray-300 font-medium mt-0.5">Ramallo, Buenos Aires</p>
                         </div>
                     </div>
 
-                    <!-- SECCIÓN DATOS DEL OPERADOR Y EQUIPAMIENTO -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 z-10">
-                        <div class="bg-gray-900/80 p-2 rounded-lg border border-gray-800">
-                            <label class="text-[9px] text-gray-400 uppercase font-semibold block">Operador / Titular</label>
-                            <input type="text" id="qsl-operator" value="Diego Martínez" class="bg-transparent text-white font-semibold w-full focus:outline-none focus:border-cyan-400 border-b border-transparent text-xs py-0.5">
+                    <!-- DATOS DEL OPERADOR Y UBICACIÓN (COMPACTOS) -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 z-10">
+                        <div class="bg-gray-900/80 px-2.5 py-1.5 rounded-lg border border-gray-800">
+                            <label class="text-[8px] text-gray-400 uppercase font-semibold block">Operador / Titular</label>
+                            <input type="text" id="qsl-operator" value="Diego Martínez" class="bg-transparent text-white font-semibold w-full focus:outline-none focus:border-cyan-400 border-b border-transparent text-xs py-0">
                         </div>
 
-                        <div class="bg-gray-900/80 p-2 rounded-lg border border-gray-800">
-                            <label class="text-[9px] text-gray-400 uppercase font-semibold block">Ubicación Estación</label>
-                            <input type="text" id="qsl-location" value="Ramallo, Prov. Buenos Aires" class="bg-transparent text-gray-300 font-medium w-full focus:outline-none focus:border-cyan-400 border-b border-transparent text-xs py-0.5">
-                        </div>
-
-                        <div class="bg-gray-900/80 p-2 rounded-lg border border-gray-800 sm:col-span-2">
-                            <label class="text-[9px] text-gray-400 uppercase font-semibold block">Antenas & Setup (Rig)</label>
-                            <input type="text" id="qsl-rig" value="Loop Magnética Multibanda DIY | End-Fed (Endfeed) HF | Transceptor Multibanda" class="bg-transparent text-cyan-300 font-mono text-xs w-full focus:outline-none focus:border-cyan-400 border-b border-transparent py-0.5">
+                        <div class="bg-gray-900/80 px-2.5 py-1.5 rounded-lg border border-gray-800">
+                            <label class="text-[8px] text-gray-400 uppercase font-semibold block">Ubicación Estación</label>
+                            <input type="text" id="qsl-location" value="Ramallo, Prov. Buenos Aires" class="bg-transparent text-gray-300 font-medium w-full focus:outline-none focus:border-cyan-400 border-b border-transparent text-xs py-0">
                         </div>
                     </div>
 
-                    <!-- REGISTRO DEL QSO (LOG CONFIRMATION) -->
-                    <div class="bg-gray-950/70 p-3 rounded-xl border border-goldAccent/30 z-10 flex flex-col gap-2">
-                        <div class="flex justify-between items-center border-b border-gray-800 pb-1.5">
-                            <span class="text-xs font-bold font-mono text-goldAccent">CONFIRMACIÓN DE CONTACTO (QSO LOG)</span>
-                            <span class="text-[10px] bg-goldAccent/20 text-goldAccent px-2 py-0.5 rounded font-mono font-bold">PSE / TNX QSL</span>
+                    <!-- REGISTRO DEL QSO (LOG CONFIRMATION COMPACTO) -->
+                    <div class="bg-gray-950/70 p-2.5 rounded-xl border border-goldAccent/30 z-10 flex flex-col gap-2">
+                        <div class="flex justify-between items-center border-b border-gray-800 pb-1">
+                            <span class="text-[11px] font-bold font-mono text-goldAccent">CONFIRMACIÓN DE CONTACTO (QSO LOG)</span>
+                            <span class="text-[9px] bg-goldAccent/20 text-goldAccent px-2 py-0.2 rounded font-mono font-bold">PSE / TNX QSL</span>
                         </div>
 
-                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                            <div class="bg-gray-900/90 p-2 rounded border border-gray-800">
-                                <label class="text-[9px] text-goldAccent font-bold uppercase block">To Radio</label>
-                                <input type="text" id="qso-to-callsign" value="LU4AAA" class="bg-transparent text-white font-mono font-bold text-xs sm:text-sm w-full uppercase focus:outline-none">
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                            <div class="bg-gray-900/90 px-2 py-1 rounded border border-gray-800">
+                                <label class="text-[8px] text-goldAccent font-bold uppercase block">To Radio</label>
+                                <input type="text" id="qso-to-callsign" value="LU4AAA" class="bg-transparent text-white font-mono font-bold text-xs w-full uppercase focus:outline-none">
                             </div>
-                            <div class="bg-gray-900/90 p-2 rounded border border-gray-800">
-                                <label class="text-[9px] text-gray-400 uppercase block">Fecha (UTC)</label>
-                                <input type="date" id="qso-date" class="bg-transparent text-gray-200 font-mono text-xs w-full focus:outline-none">
+                            <div class="bg-gray-900/90 px-2 py-1 rounded border border-gray-800">
+                                <label class="text-[8px] text-gray-400 uppercase block">Fecha (UTC)</label>
+                                <input type="date" id="qso-date" class="bg-transparent text-gray-200 font-mono text-[11px] w-full focus:outline-none">
                             </div>
-                            <div class="bg-gray-900/90 p-2 rounded border border-gray-800">
-                                <label class="text-[9px] text-gray-400 uppercase block">Hora (UTC)</label>
-                                <input type="time" id="qso-time" class="bg-transparent text-gray-200 font-mono text-xs w-full focus:outline-none">
+                            <div class="bg-gray-900/90 px-2 py-1 rounded border border-gray-800">
+                                <label class="text-[8px] text-gray-400 uppercase block">Hora (UTC)</label>
+                                <input type="time" id="qso-time" class="bg-transparent text-gray-200 font-mono text-[11px] w-full focus:outline-none">
                             </div>
-                            <div class="bg-gray-900/90 p-2 rounded border border-gray-800">
-                                <label class="text-[9px] text-gray-400 uppercase block">Banda</label>
-                                <select id="qso-band" class="bg-transparent text-gray-200 font-mono text-xs w-full focus:outline-none">
+                            <div class="bg-gray-900/90 px-2 py-1 rounded border border-gray-800">
+                                <label class="text-[8px] text-gray-400 uppercase block">Banda</label>
+                                <select id="qso-band" class="bg-transparent text-gray-200 font-mono text-[11px] w-full focus:outline-none">
                                     <option value="40m" class="bg-gray-900">40m (7 MHz)</option>
                                     <option value="20m" class="bg-gray-900" selected>20m (14 MHz)</option>
                                     <option value="15m" class="bg-gray-900">15m (21 MHz)</option>
@@ -239,10 +231,10 @@
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-3 gap-2">
-                            <div class="bg-gray-900/90 p-2 rounded border border-gray-800">
-                                <label class="text-[9px] text-gray-400 uppercase block">Modo</label>
-                                <select id="qso-mode" class="bg-transparent text-gray-200 font-mono text-xs w-full focus:outline-none">
+                        <div class="grid grid-cols-3 gap-1.5">
+                            <div class="bg-gray-900/90 px-2 py-1 rounded border border-gray-800">
+                                <label class="text-[8px] text-gray-400 uppercase block">Modo</label>
+                                <select id="qso-mode" class="bg-transparent text-gray-200 font-mono text-[11px] w-full focus:outline-none">
                                     <option value="FT8" class="bg-gray-900" selected>FT8</option>
                                     <option value="SSB" class="bg-gray-900">SSB (Voz)</option>
                                     <option value="CW" class="bg-gray-900">CW (Morse)</option>
@@ -251,48 +243,45 @@
                                     <option value="FM" class="bg-gray-900">FM</option>
                                 </select>
                             </div>
-                            <div class="bg-gray-900/90 p-2 rounded border border-gray-800">
-                                <label class="text-[9px] text-gray-400 uppercase block">RST Enviado</label>
-                                <input type="text" id="qso-rst" value="59 / -05dB" class="bg-transparent text-emerald-400 font-mono text-xs w-full focus:outline-none">
+                            <div class="bg-gray-900/90 px-2 py-1 rounded border border-gray-800">
+                                <label class="text-[8px] text-gray-400 uppercase block">RST Enviado</label>
+                                <input type="text" id="qso-rst" value="59 / -05dB" class="bg-transparent text-emerald-400 font-mono text-[11px] w-full focus:outline-none">
                             </div>
-                            <div class="bg-gray-900/90 p-2 rounded border border-gray-800">
-                                <label class="text-[9px] text-gray-400 uppercase block">2-Way QSO</label>
-                                <span class="text-xs text-cyan-400 font-bold block pt-0.5">CONFIRMADO</span>
+                            <div class="bg-gray-900/90 px-2 py-1 rounded border border-gray-800">
+                                <label class="text-[8px] text-gray-400 uppercase block">2-Way QSO</label>
+                                <span class="text-[11px] text-cyan-400 font-bold block pt-0.5">CONFIRMADO</span>
                             </div>
                         </div>
 
-                        <div class="bg-gray-900/90 p-2 rounded border border-gray-800">
-                            <label class="text-[9px] text-gray-400 uppercase block">Notas / Observaciones</label>
-                            <input type="text" id="qso-notes" value="¡Gracias por el contacto desde Ramallo! Antena Loop Magnética DIY / Endfeed. 73s dx" class="bg-transparent text-gray-300 text-xs w-full focus:outline-none italic">
+                        <div class="bg-gray-900/90 px-2 py-1 rounded border border-gray-800">
+                            <label class="text-[8px] text-gray-400 uppercase block">Notas / Observaciones</label>
+                            <input type="text" id="qso-notes" value="¡Gracias por el contacto desde Ramallo! 73s dx" class="bg-transparent text-gray-300 text-[11px] w-full focus:outline-none italic">
                         </div>
                     </div>
 
-                    <!-- FOOTER QSL -->
-                    <div class="flex flex-wrap items-center justify-between gap-2 z-10 pt-2 border-t border-gray-800">
+                    <!-- FOOTER QSL TRADICIONAL -->
+                    <div class="flex flex-wrap items-center justify-between gap-2 z-10 pt-1.5 border-t border-gray-800">
                         <div class="flex flex-wrap items-center gap-1.5">
-                            <span class="px-2 py-0.5 bg-cyan-950/80 text-cyan-300 rounded text-[10px] font-mono border border-cyan-500/40 font-semibold" title="Radio Club San Nicolás">
+                            <span class="px-2 py-0.5 bg-cyan-950/80 text-cyan-300 rounded text-[9px] font-mono border border-cyan-500/40 font-semibold" title="Radio Club San Nicolás">
                                 <i class="fa-solid fa-tower-cell mr-1"></i>Socio LU4BB
                             </span>
-                            <span class="px-2 py-0.5 bg-amber-950/80 text-amber-300 rounded text-[10px] font-mono border border-amber-500/40 font-semibold" title="Radio Club Villa Ramallo">
+                            <span class="px-2 py-0.5 bg-amber-950/80 text-amber-300 rounded text-[9px] font-mono border border-amber-500/40 font-semibold" title="Radio Club Villa Ramallo">
                                 <i class="fa-solid fa-building-flag mr-1"></i>Socio LW4ERZ
                             </span>
-                            <span class="px-2 py-0.5 bg-gray-900/90 text-gray-400 rounded text-[10px] font-mono border border-gray-700/80">
-                                NO SARA
-                            </span>
                         </div>
-                        <span class="text-[11px] text-goldAccent font-mono font-bold">Vy 73 & Good DX!</span>
+                        <span class="text-[10px] text-goldAccent font-mono font-bold">Vy 73 & Good DX!</span>
                     </div>
                 </div>
             </div>
 
             <!-- CONTROLES DE ACCIÓN DE LA TARJETA -->
             <div class="no-print grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <button id="btn-play-morse" class="flex items-center justify-center gap-2 bg-gray-800 hover:bg-gray-700 text-goldAccent border border-goldAccent/30 font-semibold py-2.5 px-4 rounded-xl transition duration-200 text-sm shadow-md active:scale-95">
+                <button id="btn-play-morse" class="flex items-center justify-center gap-2 bg-gray-800 hover:bg-gray-700 text-goldAccent border border-goldAccent/30 font-semibold py-2 px-4 rounded-xl transition duration-200 text-sm shadow-md active:scale-95">
                     <i class="fa-solid fa-volume-high" id="morse-icon"></i>
                     <span id="morse-btn-text">Morse LU2EGU</span>
                 </button>
 
-                <button id="btn-print-qsl" class="flex items-center justify-center gap-2 bg-cyan-600 hover:bg-cyan-500 text-white font-semibold py-2.5 px-4 rounded-xl transition duration-200 text-sm shadow-md shadow-cyan-600/20 active:scale-95">
+                <button id="btn-print-qsl" class="flex items-center justify-center gap-2 bg-cyan-600 hover:bg-cyan-500 text-white font-semibold py-2 px-4 rounded-xl transition duration-200 text-sm shadow-md shadow-cyan-600/20 active:scale-95">
                     <i class="fa-solid fa-print"></i>
                     <span>Imprimir / Descargar PDF</span>
                 </button>
@@ -310,46 +299,46 @@
             </div>
 
             <!-- SECCIÓN ALERTAS Y CLIMA LOCAL EN RAMALLO -->
-            <div class="no-print glass-panel p-5 rounded-2xl border border-gray-800 flex flex-col gap-4">
-                <div class="flex justify-between items-center border-b border-gray-800 pb-3">
+            <div class="no-print glass-panel p-4 rounded-2xl border border-gray-800 flex flex-col gap-3">
+                <div class="flex justify-between items-center border-b border-gray-800 pb-2">
                     <div class="flex items-center gap-2">
-                        <i class="fa-solid fa-cloud-bolt text-yellow-400 text-lg"></i>
+                        <i class="fa-solid fa-cloud-bolt text-yellow-400 text-base"></i>
                         <div>
-                            <h3 class="font-bold text-white text-sm">Clima Ramallo & Protección de Antenas</h3>
-                            <p class="text-[11px] text-gray-400">Protección para Loop Magnética & End-Fed (FF96xm)</p>
+                            <h3 class="font-bold text-white text-xs">Clima Ramallo & Protección de Antenas</h3>
+                            <p class="text-[10px] text-gray-400">Loop Magnética & End-Fed (FF96xm)</p>
                         </div>
                     </div>
-                    <button id="btn-toggle-antenna" class="px-3 py-1.5 rounded-lg text-xs font-bold font-mono transition duration-200 bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">
-                        <i class="fa-solid fa-plug-circle-check mr-1"></i> ANTENAS CONECTADAS
+                    <button id="btn-toggle-antenna" class="px-2.5 py-1 rounded-lg text-[11px] font-bold font-mono transition duration-200 bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">
+                        <i class="fa-solid fa-plug-circle-check mr-1"></i> CONECTADAS
                     </button>
                 </div>
 
-                <div id="antenna-alert-box" class="p-3.5 rounded-xl bg-emerald-950/40 border border-emerald-500/30 flex items-start gap-3">
-                    <div id="alert-icon-container" class="p-2 rounded-lg bg-emerald-500/20 text-emerald-400 text-lg">
+                <div id="antenna-alert-box" class="p-3 rounded-xl bg-emerald-950/40 border border-emerald-500/30 flex items-start gap-2.5">
+                    <div id="alert-icon-container" class="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 text-base">
                         <i class="fa-solid fa-shield-halved"></i>
                     </div>
                     <div class="flex-grow">
-                        <h4 id="alert-title" class="font-bold text-xs text-emerald-300 uppercase tracking-wider">CONDICIONES SEGURAS DE OPERACIÓN</h4>
-                        <p id="alert-desc" class="text-xs text-gray-300 mt-0.5">Sin riesgo de tormentas eléctricas o vientos en Ramallo. Antenas Loop Magnética y End-Fed listas para operar en HF.</p>
+                        <h4 id="alert-title" class="font-bold text-[11px] text-emerald-300 uppercase tracking-wider">CONDICIONES SEGURAS DE OPERACIÓN</h4>
+                        <p id="alert-desc" class="text-[11px] text-gray-300 mt-0.5">Sin riesgo de tormentas eléctricas o vientos en Ramallo. Antenas listas para HF.</p>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center font-mono">
-                    <div class="bg-gray-900/60 p-2.5 rounded-xl border border-gray-800">
-                        <span class="text-[10px] text-gray-400 font-sans block">Temperatura</span>
-                        <span id="wx-temp" class="text-base font-bold text-cyan-400">22.5 °C</span>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center font-mono">
+                    <div class="bg-gray-900/60 p-2 rounded-xl border border-gray-800">
+                        <span class="text-[9px] text-gray-400 font-sans block">Temperatura</span>
+                        <span id="wx-temp" class="text-sm font-bold text-cyan-400">22.5 °C</span>
                     </div>
-                    <div class="bg-gray-900/60 p-2.5 rounded-xl border border-gray-800">
-                        <span class="text-[10px] text-gray-400 font-sans block">Viento</span>
-                        <span id="wx-wind" class="text-base font-bold text-gray-200">12 km/h</span>
+                    <div class="bg-gray-900/60 p-2 rounded-xl border border-gray-800">
+                        <span class="text-[9px] text-gray-400 font-sans block">Viento</span>
+                        <span id="wx-wind" class="text-sm font-bold text-gray-200">12 km/h</span>
                     </div>
-                    <div class="bg-gray-900/60 p-2.5 rounded-xl border border-gray-800">
-                        <span class="text-[10px] text-gray-400 font-sans block">Humedad</span>
-                        <span id="wx-humidity" class="text-base font-bold text-gray-200">68%</span>
+                    <div class="bg-gray-900/60 p-2 rounded-xl border border-gray-800">
+                        <span class="text-[9px] text-gray-400 font-sans block">Humedad</span>
+                        <span id="wx-humidity" class="text-sm font-bold text-gray-200">68%</span>
                     </div>
-                    <div class="bg-gray-900/60 p-2.5 rounded-xl border border-gray-800">
-                        <span class="text-[10px] text-gray-400 font-sans block">Prob. Lluvia</span>
-                        <span id="wx-rain" class="text-base font-bold text-yellow-400">15%</span>
+                    <div class="bg-gray-900/60 p-2 rounded-xl border border-gray-800">
+                        <span class="text-[9px] text-gray-400 font-sans block">Prob. Lluvia</span>
+                        <span id="wx-rain" class="text-sm font-bold text-yellow-400">15%</span>
                     </div>
                 </div>
             </div>
@@ -358,39 +347,36 @@
 
 
         <!-- SECCIÓN DERECHA: CLIMA ESPACIAL, ESTADO DE BANDAS Y SATÉLITES -->
-        <section class="lg:col-span-5 flex flex-col gap-5 no-print">
+        <section class="lg:col-span-5 flex flex-col gap-4 no-print">
 
             <!-- CLIMA ESPACIAL & SOLAR -->
-            <div class="glass-panel p-5 rounded-2xl border border-gray-800 flex flex-col gap-4">
-                <div class="flex justify-between items-center border-b border-gray-800 pb-3">
+            <div class="glass-panel p-4 rounded-2xl border border-gray-800 flex flex-col gap-3">
+                <div class="flex justify-between items-center border-b border-gray-800 pb-2">
                     <div class="flex items-center gap-2">
-                        <i class="fa-solid fa-sun text-goldAccent text-lg"></i>
-                        <h3 class="font-bold text-white text-sm">Clima Espacial / Datos Solares</h3>
+                        <i class="fa-solid fa-sun text-goldAccent text-base"></i>
+                        <h3 class="font-bold text-white text-xs">Clima Espacial / Datos Solares</h3>
                     </div>
-                    <span class="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-yellow-500/20 text-yellow-300 border border-yellow-500/30">
-                        NOAA Live Data
+                    <span class="px-2 py-0.5 rounded text-[9px] font-bold font-mono bg-yellow-500/20 text-yellow-300 border border-yellow-500/30">
+                        NOAA Live
                     </span>
                 </div>
 
                 <div class="grid grid-cols-3 gap-2 text-center font-mono">
-                    <div class="bg-gray-900/80 p-2.5 rounded-xl border border-gray-800/80">
-                        <div class="text-[10px] text-gray-400 font-sans">SFI (Solar Flux)</div>
-                        <div class="text-lg font-bold text-goldAccent mt-0.5">165</div>
-                        <div class="text-[9px] text-emerald-400">Elevado</div>
+                    <div class="bg-gray-900/80 p-2 rounded-xl border border-gray-800/80">
+                        <div class="text-[9px] text-gray-400 font-sans">SFI (Solar Flux)</div>
+                        <div class="text-base font-bold text-goldAccent mt-0.5">165</div>
                     </div>
-                    <div class="bg-gray-900/80 p-2.5 rounded-xl border border-gray-800/80">
-                        <div class="text-[10px] text-gray-400 font-sans">SSN (Manchas)</div>
-                        <div class="text-lg font-bold text-cyan-400 mt-0.5">128</div>
-                        <div class="text-[9px] text-cyan-400">Activo</div>
+                    <div class="bg-gray-900/80 p-2 rounded-xl border border-gray-800/80">
+                        <div class="text-[9px] text-gray-400 font-sans">SSN (Manchas)</div>
+                        <div class="text-base font-bold text-cyan-400 mt-0.5">128</div>
                     </div>
-                    <div class="bg-gray-900/80 p-2.5 rounded-xl border border-gray-800/80">
-                        <div class="text-[10px] text-gray-400 font-sans">Índice Kp</div>
-                        <div class="text-lg font-bold text-emerald-400 mt-0.5">2.1</div>
-                        <div class="text-[9px] text-emerald-400">Tranquilo</div>
+                    <div class="bg-gray-900/80 p-2 rounded-xl border border-gray-800/80">
+                        <div class="text-[9px] text-gray-400 font-sans">Índice Kp</div>
+                        <div class="text-base font-bold text-emerald-400 mt-0.5">2.1</div>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-2 text-xs font-mono bg-gray-950/60 p-2.5 rounded-xl border border-gray-800">
+                <div class="grid grid-cols-2 gap-2 text-[11px] font-mono bg-gray-950/60 p-2 rounded-xl border border-gray-800">
                     <div class="flex justify-between">
                         <span class="text-gray-400">Viento Solar:</span>
                         <span class="text-cyan-300 font-bold">410 km/s</span>
@@ -399,35 +385,27 @@
                         <span class="text-gray-400">Índice A:</span>
                         <span class="text-gray-200 font-bold">7</span>
                     </div>
-                    <div class="flex justify-between">
-                        <span class="text-gray-400">Aurora (30m):</span>
-                        <span class="text-emerald-400 font-bold">Baja (12%)</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-gray-400">Campo Bz:</span>
-                        <span class="text-cyan-300 font-bold">+2.4 nT</span>
-                    </div>
                 </div>
             </div>
 
             <!-- ESTADO DE LAS BANDAS -->
-            <div class="glass-panel p-5 rounded-2xl border border-gray-800 flex flex-col gap-3">
+            <div class="glass-panel p-4 rounded-2xl border border-gray-800 flex flex-col gap-2.5">
                 <div class="flex justify-between items-center border-b border-gray-800 pb-2">
                     <div class="flex items-center gap-2">
                         <i class="fa-solid fa-signal text-cyan-400"></i>
-                        <h3 class="font-bold text-white text-sm">Estado de Bandas HF / VHF</h3>
+                        <h3 class="font-bold text-white text-xs">Estado de Bandas HF / VHF</h3>
                     </div>
-                    <span id="cycle-day-night" class="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-900/40 text-blue-300 border border-blue-700">DÍA UTC</span>
+                    <span id="cycle-day-night" class="text-[9px] font-mono px-2 py-0.5 rounded bg-blue-900/40 text-blue-300 border border-blue-700">DÍA UTC</span>
                 </div>
 
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left font-mono text-xs">
+                    <table class="w-full text-left font-mono text-[11px]">
                         <thead>
-                            <tr class="text-gray-500 border-b border-gray-800 text-[10px] uppercase">
-                                <th class="pb-2">Banda</th>
-                                <th class="pb-2">Día</th>
-                                <th class="pb-2">Noche</th>
-                                <th class="pb-2 text-right">Estado Actual</th>
+                            <tr class="text-gray-500 border-b border-gray-800 text-[9px] uppercase">
+                                <th class="pb-1.5">Banda</th>
+                                <th class="pb-1.5">Día</th>
+                                <th class="pb-1.5">Noche</th>
+                                <th class="pb-1.5 text-right">Estado</th>
                             </tr>
                         </thead>
                         <tbody id="bands-table-body" class="divide-y divide-gray-800/60">
@@ -437,72 +415,72 @@
                 </div>
             </div>
 
-            <!-- SECCIÓN DEDICADA: SEGUIMIENTO Y PRÓXIMOS PASES DE SATÉLITES SOBRE RAMALLO -->
-            <div class="glass-panel p-5 rounded-2xl border border-gray-800 flex flex-col gap-4">
-                <div class="flex justify-between items-center border-b border-gray-800 pb-3">
+            <!-- SECCIÓN DEDICADA: SEGUIMIENTO Y PRÓXIMOS PASES DE SATÉLITES -->
+            <div class="glass-panel p-4 rounded-2xl border border-gray-800 flex flex-col gap-3">
+                <div class="flex justify-between items-center border-b border-gray-800 pb-2">
                     <div class="flex items-center gap-2">
-                        <i class="fa-solid fa-satellite text-cyan-400 text-lg"></i>
+                        <i class="fa-solid fa-satellite text-cyan-400 text-base"></i>
                         <div>
-                            <h3 class="font-bold text-white text-sm">Satélites sobre Ramallo</h3>
-                            <p class="text-[10px] text-gray-400">Predicción SGP4 / Grid FF96xm</p>
+                            <h3 class="font-bold text-white text-xs">Satélites sobre Ramallo</h3>
+                            <p class="text-[9px] text-gray-400">Predicción SGP4 / Grid FF96xm</p>
                         </div>
                     </div>
-                    <button id="btn-doppler-sim" class="text-xs bg-cyan-950 text-cyan-300 border border-cyan-700 hover:bg-cyan-900 px-2.5 py-1 rounded-lg transition">
-                        <i class="fa-solid fa-sliders mr-1"></i> Doppler Sim
+                    <button id="btn-doppler-sim" class="text-[11px] bg-cyan-950 text-cyan-300 border border-cyan-700 hover:bg-cyan-900 px-2 py-0.5 rounded transition">
+                        <i class="fa-solid fa-sliders mr-1"></i> Doppler
                     </button>
                 </div>
 
-                <div class="space-y-4" id="satellites-container">
+                <div class="space-y-3" id="satellites-container">
                     
                     <!-- ISS Card -->
-                    <div class="bg-gray-900/80 p-3.5 rounded-xl border border-gray-800 hover:border-cyan-500/40 transition">
-                        <div class="flex justify-between items-start mb-2">
+                    <div class="bg-gray-900/80 p-3 rounded-xl border border-gray-800 hover:border-cyan-500/40 transition">
+                        <div class="flex justify-between items-start mb-1.5">
                             <div>
-                                <span class="font-bold text-white font-mono text-sm">ISS (ZARYA)</span>
-                                <span class="text-[10px] text-gray-400 block">FM Voice / APRS (145.800 MHz)</span>
+                                <span class="font-bold text-white font-mono text-xs">ISS (ZARYA)</span>
+                                <span class="text-[9px] text-gray-400 block">FM Voice / APRS (145.800 MHz)</span>
                             </div>
-                            <span class="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-mono rounded font-bold">Activo</span>
+                            <span class="px-1.5 py-0.2 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[9px] font-mono rounded font-bold">Activo</span>
                         </div>
-                        <div class="grid grid-cols-3 gap-2 font-mono text-center text-xs mb-2.5 bg-gray-950/60 p-2 rounded-lg">
+                        <div class="grid grid-cols-3 gap-1.5 font-mono text-center text-[11px] mb-2 bg-gray-950/60 p-1.5 rounded-lg">
                             <div>
-                                <span class="text-[9px] text-gray-400 block font-sans">Azimut Act.</span>
+                                <span class="text-[8px] text-gray-400 block font-sans">Azimut</span>
                                 <span id="iss-az" class="text-cyan-400 font-bold">--</span>
                             </div>
                             <div>
-                                <span class="text-[9px] text-gray-400 block font-sans">Elevación Act.</span>
+                                <span class="text-[8px] text-gray-400 block font-sans">Elevación</span>
                                 <span id="iss-el" class="text-emerald-400 font-bold">--</span>
                             </div>
                             <div>
-                                <span class="text-[9px] text-gray-400 block font-sans">Doppler</span>
+                                <span class="text-[8px] text-gray-400 block font-sans">Doppler</span>
                                 <span id="iss-doppler" class="text-goldAccent font-bold">--</span>
                             </div>
                         </div>
-                        <div class="text-[11px] font-mono text-gray-300 flex justify-between items-center bg-cyan-950/30 p-2 rounded border border-cyan-900/50">
+                        <div class="text-[10px] font-mono text-gray-300 flex justify-between items-center bg-cyan-950/30 p-1.5 rounded border border-cyan-900/50">
                             <span class="text-gray-400">Próximo Pase:</span>
                             <span id="iss-countdown" class="text-cyan-300 font-bold">Calculando...</span>
                         </div>
                     </div>
 
                     <!-- SO-50 Card -->
-                    <div class="bg-gray-900/80 p-3.5 rounded-xl border border-gray-800 hover:border-cyan-500/40 transition">
-                        <div class="flex justify-between items-start mb-2">
+                    <div class="bg-gray-900/80 p-3 rounded-xl border border-gray-800 hover:border-cyan-500/40 transition">
+                        <div class="flex justify-between items-start mb-1.5">
                             <div>
-                                <span class="font-bold text-white font-mono text-sm">SO-50 (SAUDISAT 1C)</span>
-                                <span class="text-[10px] text-gray-400 block">FM Transponder (436.790 MHz)</span>
+                                <span class="font-bold text-white font-mono text-xs">SO-50 (SAUDISAT 1C)</span>
+                                <span class="text-[9px] text-gray-400 block">FM Transponder (436.790 MHz)</span>
                             </div>
-                            <span class="px-2 py-0.5 bg-blue-500/20 text-blue-400 border border-blue-500/30 text-[10px] font-mono rounded font-bold">Orbitando</span>
+                            <span class="px-1.5 py-0.2 bg-blue-500/20 text-blue-400 border border-blue-500/30 text-[9px] font-mono rounded font-bold">Orbitando</span>
                         </div>
-                        <div class="grid grid-cols-2 gap-2 font-mono text-center text-xs mb-2.5 bg-gray-950/60 p-2 rounded-lg">
+                        <div class="grid grid-cols-2 gap-1.5 font-mono text-center text-[11px] mb-2 bg-gray-950/60 p-1.5 rounded-lg">
                             <div>
-                                <span class="text-[9px] text-gray-400 block font-sans">Azimut Act.</span>
+                                <span class="text-[8px] text-gray-400 block font-sans">Azimut</span>
                                 <span id="so50-az" class="text-cyan-400 font-bold">--</span>
                             </div>
                             <div>
-                                <span class="text-[9px] text-gray-400 block font-sans">Elevación Act.</span>
+                                <span class="text-[8px] text-gray-400 block font-sans">Elevación</span>
                                 <span id="so50-el" class="text-emerald-400 font-bold">--</span>
                             </div>
                         </div>
-                        <div class="text-[11px] font-mono text-gray-300 flex justify-between items-center bg-cyan-950/30 p-2 rounded border border-cyan-900/50">
+                        <div class="text-[10px] font-mono text-gray-300 flex justify-between items-center bg-cyan-950/30 p-1.5 rounded border border-cyan-900/50">
                             <span class="text-gray-400">Próximo Pase:</span>
                             <span id="so50-countdown" class="text-cyan-300 font-bold">Calculando...</span>
                         </div>
@@ -516,10 +494,10 @@
     </main>
 
     <!-- FOOTER -->
-    <footer class="no-print border-t border-gray-800 bg-gray-900/60 py-4 px-4 text-center text-xs text-gray-400 font-mono mt-8">
+    <footer class="no-print border-t border-gray-800 bg-gray-900/60 py-3 px-4 text-center text-xs text-gray-400 font-mono mt-6">
         <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
             <p>Estación Radioaficionado <strong class="text-cyan-400">LU2EGU</strong> &bull; Ramallo, Argentina (Grid: FF96xm)</p>
-            <p>Diseñado para Operación en HF (Loop Magnética / End-Fed) & Satélites</p>
+            <p>Diseñado para Operación en HF & Satélites</p>
         </div>
     </footer>
 
@@ -596,23 +574,23 @@
             btnToggleAntenna.addEventListener('click', () => {
                 antennasConnected = !antennasConnected;
                 if (antennasConnected) {
-                    btnToggleAntenna.className = "px-3 py-1.5 rounded-lg text-xs font-bold font-mono transition duration-200 bg-emerald-500/20 text-emerald-400 border border-emerald-500/40";
-                    btnToggleAntenna.innerHTML = '<i class="fa-solid fa-plug-circle-check mr-1"></i> ANTENAS CONECTADAS';
-                    antennaAlertBox.className = "p-3.5 rounded-xl bg-emerald-950/40 border border-emerald-500/30 flex items-start gap-3";
-                    alertIconContainer.className = "p-2 rounded-lg bg-emerald-500/20 text-emerald-400 text-lg";
+                    btnToggleAntenna.className = "px-2.5 py-1 rounded-lg text-[11px] font-bold font-mono transition duration-200 bg-emerald-500/20 text-emerald-400 border border-emerald-500/40";
+                    btnToggleAntenna.innerHTML = '<i class="fa-solid fa-plug-circle-check mr-1"></i> CONECTADAS';
+                    antennaAlertBox.className = "p-3 rounded-xl bg-emerald-950/40 border border-emerald-500/30 flex items-start gap-2.5";
+                    alertIconContainer.className = "p-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 text-base";
                     alertIconContainer.innerHTML = '<i class="fa-solid fa-shield-halved"></i>';
-                    alertTitle.className = "font-bold text-xs text-emerald-300 uppercase tracking-wider";
+                    alertTitle.className = "font-bold text-[11px] text-emerald-300 uppercase tracking-wider";
                     alertTitle.textContent = "CONDICIONES SEGURAS DE OPERACIÓN";
-                    alertDesc.textContent = "Sin riesgo de tormentas eléctricas o vientos en Ramallo. Antenas Loop Magnética y End-Fed listas para operar en HF.";
+                    alertDesc.textContent = "Sin riesgo de tormentas eléctricas o vientos en Ramallo. Antenas listas para HF.";
                 } else {
-                    btnToggleAntenna.className = "px-3 py-1.5 rounded-lg text-xs font-bold font-mono transition duration-200 bg-red-500/20 text-red-400 border border-red-500/40";
-                    btnToggleAntenna.innerHTML = '<i class="fa-solid fa-triangle-exclamation mr-1"></i> ANTENAS DESCONECTADAS (TORMENTA)';
-                    antennaAlertBox.className = "p-3.5 rounded-xl bg-red-950/40 border border-red-500/30 flex items-start gap-3";
-                    alertIconContainer.className = "p-2 rounded-lg bg-red-500/20 text-red-400 text-lg";
+                    btnToggleAntenna.className = "px-2.5 py-1 rounded-lg text-[11px] font-bold font-mono transition duration-200 bg-red-500/20 text-red-400 border border-red-500/40";
+                    btnToggleAntenna.innerHTML = '<i class="fa-solid fa-triangle-exclamation mr-1"></i> DESCONECTADAS';
+                    antennaAlertBox.className = "p-3 rounded-xl bg-red-950/40 border border-red-500/30 flex items-start gap-2.5";
+                    alertIconContainer.className = "p-1.5 rounded-lg bg-red-500/20 text-red-400 text-base";
                     alertIconContainer.innerHTML = '<i class="fa-solid fa-bolt-lightning"></i>';
-                    alertTitle.className = "font-bold text-xs text-red-300 uppercase tracking-wider";
-                    alertTitle.textContent = "ALERTA: ANTENAS DESCONECTADAS POR SEGURIDAD";
-                    alertDesc.textContent = "Precaución: Desconecte bajadas coaxiales y puesta a tierra por actividad eléctrica o tormenta inminente en la zona.";
+                    alertTitle.className = "font-bold text-[11px] text-red-300 uppercase tracking-wider";
+                    alertTitle.textContent = "ALERTA: ANTENAS DESCONECTADAS POR TORMENTA";
+                    alertDesc.textContent = "Precaución: Desconecte bajadas coaxiales y puesta a tierra por actividad eléctrica.";
                 }
             });
         }
@@ -631,10 +609,10 @@
         if (bandsTableBody) {
             bandsTableBody.innerHTML = bandsData.map(b => `
                 <tr class="hover:bg-gray-900/40 transition">
-                    <td class="py-2.5 font-bold text-white">${b.band} <span class="text-[10px] text-gray-400 font-normal">(${b.freq})</span></td>
-                    <td class="py-2.5 text-gray-300">${b.day}</td>
-                    <td class="py-2.5 text-gray-400">${b.night}</td>
-                    <td class="py-2.5 text-right font-bold ${b.color}">${b.status}</td>
+                    <td class="py-1.5 font-bold text-white">${b.band} <span class="text-[9px] text-gray-400 font-normal">(${b.freq})</span></td>
+                    <td class="py-1.5 text-gray-300">${b.day}</td>
+                    <td class="py-1.5 text-gray-400">${b.night}</td>
+                    <td class="py-1.5 text-right font-bold ${b.color}">${b.status}</td>
                 </tr>
             `).join('');
         }
@@ -675,7 +653,7 @@
                 maxEl: 52
             };
 
-            // SO-50: Próximo pase estimado en 1h 45m
+            // SO-50: Próximo pase estimado
             let proximoSO50 = new Date(ahora.getTime() + 105 * 60 * 1000);
             window.proximoPaseSO50Data = {
                 inicio: proximoSO50,
@@ -689,7 +667,7 @@
         function actualizarCountdownsSat() {
             const ahora = new Date();
 
-            // 1. ISS
+            // 1. ISS Countdown
             const issEl = document.getElementById('iss-countdown');
             if (issEl && window.proximoPaseISSData) {
                 const diffMs = window.proximoPaseISSData.inicio.getTime() - ahora.getTime();
@@ -709,7 +687,7 @@
                 }
             }
 
-            // 2. SO-50
+            // 2. SO-50 Countdown
             const so50El = document.getElementById('so50-countdown');
             if (so50El && window.proximoPaseSO50Data) {
                 const diffMs = window.proximoPaseSO50Data.inicio.getTime() - ahora.getTime();
@@ -742,7 +720,7 @@
 
             actualizarCountdownsSat();
 
-            // 1. ISS
+            // 1. ISS Tracking
             if (SATELLITES.iss.tle1 && SATELLITES.iss.tle2) {
                 const satrec = satellite.twoline2satrec(SATELLITES.iss.tle1, SATELLITES.iss.tle2);
                 const positionAndVelocity = satellite.propagate(satrec, now);
@@ -766,7 +744,7 @@
                 }
             }
 
-            // 2. SO-50
+            // 2. SO-50 Tracking
             if (SATELLITES.so50.tle1 && SATELLITES.so50.tle2) {
                 const satrec = satellite.twoline2satrec(SATELLITES.so50.tle1, SATELLITES.so50.tle2);
                 const positionAndVelocity = satellite.propagate(satrec, now);
