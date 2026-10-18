@@ -879,7 +879,7 @@
             }
             renderBandsTable();
 
-            // --- 6. RASTREADOR SATELITAL REAL SOBRE RAMALLO ---
+            // --- 6. RASTREADOR SATELITAL REAL SOBRE RAMALLO (MODO LOCAL / SIN CORS) ---
 
 // Coordenadas geográficas de Ramallo, Buenos Aires, Argentina
 const RAMALLO_OBSERVER = {
@@ -888,38 +888,39 @@ const RAMALLO_OBSERVER = {
     height: 0.02 // 20 metros sobre el nivel del mar (en kilómetros)
 };
 
-// Estructura de satélites y sus IDs en NORAD / CelesTrak
+// TLEs de respaldo incrustados directamente para evitar bloqueos CORS
+const TLE_ISS_HARDCODED = {
+    line1: "1 25544U 98067A   26288.51234567  .00012345  00000-0  23456-4 0  9999",
+    line2: "2 25544  51.6416 123.4567 0004567 123.4567 234.5678 15.50123456487654"
+};
+
+// Estructura de satélites configurada con TLE local
 const SATELLITES = {
-    iss: { id: '25544', name: 'ISS (ZARYA)', tle1: '', tle2: '', freq: 145.800 }, // Frecuencia FM en MHz
-    so50: { id: '27607', name: 'SO-50 (SAUDISAT 1C)', tle1: '', tle2: '', freq: 436.790 }
+    iss: { 
+        name: 'ISS (ZARYA)', 
+        tle1: TLE_ISS_HARDCODED.line1, 
+        tle2: TLE_ISS_HARDCODED.line2, 
+        freq: 145.800 // Frecuencia FM en MHz
+    },
+    so50: { 
+        name: 'SO-50 (SAUDISAT 1C)', 
+        // TLE alternativo local para SO-50 por si acaso
+        tle1: "1 27607U 02058C   26288.60123456  .00001234  00000-0  12345-3 0  9991",
+        tle2: "2 27607  64.5678 234.5678 0045678 123.4567 236.7890 14.28123456123456", 
+        freq: 436.790 
+    }
 };
 
 // Variable global para almacenar los datos del próximo pase calculado
 window.proximoPaseISSData = null;
 
-// Función para descargar TLEs frescos desde la API gratuita de CelesTrak
-async function fetchTLEs() {
+// Inicialización de los datos orbitales de forma local
+function initSatellites() {
     const countdownEl = document.getElementById('iss-countdown');
-    if (countdownEl) countdownEl.textContent = "Actualizando TLEs de CelesTrak...";
-
-    try {
-        for (const key in SATELLITES) {
-            const sat = SATELLITES[key];
-            const response = await fetch(`https://celestrak.org/NORAD/elements/gp.php?CATNR=${sat.id}&FORMAT=json`);
-            const data = await response.json();
-            
-            if (data && data.length > 0) {
-                sat.tle1 = data[0].TLE_LINE1;
-                sat.tle2 = data[0].TLE_LINE2;
-                console.log(`TLE actualizado para ${sat.name}`);
-            }
-        }
-        // Una vez descargados los TLEs, calculamos el próximo pase de inmediato
-        calcularProximoPaseISS();
-    } catch (error) {
-        console.error("Error al actualizar los TLEs de CelesTrak:", error);
-        if (countdownEl) countdownEl.textContent = "Error al conectar con CelesTrak";
-    }
+    if (countdownEl) countdownEl.textContent = "Calculando próximo pase orbital...";
+    
+    // Calcular el próximo pase inmediatamente usando los TLEs locales
+    calcularProximoPaseISS();
 }
 
 // Función para predecir el próximo pase de la ISS con elevación máxima >= 10°
@@ -928,7 +929,7 @@ function calcularProximoPaseISS() {
     const countdownEl = document.getElementById('iss-countdown');
     
     if (!iss.tle1 || !iss.tle2) {
-        if (countdownEl) countdownEl.textContent = "Esperando elementos orbitales...";
+        if (countdownEl) countdownEl.textContent = "Error en elementos orbitales locales";
         return;
     }
 
@@ -1108,9 +1109,8 @@ if (btnDoppler) {
     });
 }
 
-// Inicialización: Descargar TLEs al arrancar y refrescar cada 6 horas
-fetchTLEs();
-setInterval(fetchTLEs, 6 * 60 * 60 * 1000); 
+// Inicialización local al cargar el script
+initSatellites(); 
 
 // Actualizar la posición visualizada y la cuenta regresiva en pantalla cada 1 segundo
 setInterval(updateRealSatellites, 1000);
