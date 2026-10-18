@@ -894,8 +894,14 @@ const SATELLITES = {
     so50: { id: '27607', name: 'SO-50 (SAUDISAT 1C)', tle1: '', tle2: '', freq: 436.790 }
 };
 
+// Variable global para almacenar los datos del próximo pase calculado
+window.proximoPaseISSData = null;
+
 // Función para descargar TLEs frescos desde la API gratuita de CelesTrak
 async function fetchTLEs() {
+    const countdownEl = document.getElementById('iss-countdown');
+    if (countdownEl) countdownEl.textContent = "Actualizando TLEs de CelesTrak...";
+
     try {
         for (const key in SATELLITES) {
             const sat = SATELLITES[key];
@@ -912,16 +918,19 @@ async function fetchTLEs() {
         calcularProximoPaseISS();
     } catch (error) {
         console.error("Error al actualizar los TLEs de CelesTrak:", error);
-        const countdownEl = document.getElementById('iss-countdown');
-        if (countdownEl) countdownEl.textContent = "Error al cargar TLEs";
+        if (countdownEl) countdownEl.textContent = "Error al conectar con CelesTrak";
     }
 }
 
-// Función para predecir el próximo pase de la ISS con elevación máxima > 10°
+// Función para predecir el próximo pase de la ISS con elevación máxima >= 10°
 function calcularProximoPaseISS() {
     const iss = SATELLITES.iss;
     const countdownEl = document.getElementById('iss-countdown');
-    if (!iss.tle1 || !iss.tle2 || !countdownEl) return;
+    
+    if (!iss.tle1 || !iss.tle2) {
+        if (countdownEl) countdownEl.textContent = "Esperando elementos orbitales...";
+        return;
+    }
 
     const satrec = satellite.twoline2satrec(iss.tle1, iss.tle2);
     const observerGd = {
@@ -962,9 +971,8 @@ function calcularProximoPaseISS() {
                 }
             } else {
                 if (enPase) {
-                    // Fin del pase detectado
                     finPase = new Date(t.getTime());
-                    // Verificamos si es un pase relevante (ej. elevación máxima mayor a 10 grados)
+                    // Verificamos si es un pase relevante (elevación máxima >= 10 grados)
                     if (maxElPase >= 10 && inicioPase.getTime() > tiempoActual.getTime()) {
                         window.proximoPaseISSData = {
                             inicio: inicioPase,
@@ -982,25 +990,29 @@ function calcularProximoPaseISS() {
         t = new Date(t.getTime() + pasoSimulacionMs);
     }
 
-    countdownEl.textContent = "No se encuentra próximo pase visible";
+    if (countdownEl) countdownEl.textContent = "No se encuentra próximo pase visible";
 }
 
 // Actualiza el texto dinámicamente cada segundo en el DOM
 function actualizarTextoCountdown() {
     const countdownEl = document.getElementById('iss-countdown');
-    if (!countdownEl || !window.proximoPaseISSData) return;
+    if (!countdownEl) return;
+
+    if (!window.proximoPaseISSData) {
+        countdownEl.textContent = "Calculando órbita y pases...";
+        return;
+    }
 
     const ahora = new Date();
     const inicio = window.proximoPaseISSData.inicio;
     const diffMs = inicio.getTime() - ahora.getTime();
 
     if (diffMs <= 0) {
-        // Si el pase ya comenzó o está en curso
         const fin = window.proximoPaseISSData.fin;
         if (ahora.getTime() <= fin.getTime()) {
             countdownEl.textContent = `¡PASO EN CURSO! (Máx El: ${window.proximoPaseISSData.maxEl.toFixed(0)}°)`;
         } else {
-            // Si ya pasó, recalculamos el siguiente
+            // Si el pase ya terminó, recalculamos el siguiente
             calcularProximoPaseISS();
         }
         return;
@@ -1012,6 +1024,8 @@ function actualizarTextoCountdown() {
     const segundos = Math.floor((diffMs % (1000 * 60)) / 1000);
 
     const horaLocalStr = inicio.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    
+    // Inyección explícita en el elemento HTML solicitado
     countdownEl.textContent = `En ${horas}h ${minutos}m ${segundos}s (A las ${horaLocalStr} - Máx El: ${window.proximoPaseISSData.maxEl.toFixed(0)}°)`;
 }
 
@@ -1020,7 +1034,7 @@ function updateRealSatellites() {
     const now = new Date();
     const gmst = satellite.gstime(now);
 
-    // Definir observador en formato que entiende satellite.js
+    // Definir observador
     const observerGd = {
         latitude: satellite.degreesToRadians(RAMALLO_OBSERVER.latitude),
         longitude: satellite.degreesToRadians(RAMALLO_OBSERVER.longitude),
@@ -1030,7 +1044,7 @@ function updateRealSatellites() {
     // Actualizar cuenta regresiva del próximo pase de la ISS cada segundo
     actualizarTextoCountdown();
 
-    // 1. Procesar ISS
+    // 1. Procesar ISS (Posición actual y Doppler)
     if (SATELLITES.iss.tle1 && SATELLITES.iss.tle2) {
         const satrec = satellite.twoline2satrec(SATELLITES.iss.tle1, SATELLITES.iss.tle2);
         const positionAndVelocity = satellite.propagate(satrec, now);
@@ -1042,10 +1056,9 @@ function updateRealSatellites() {
             const az = satellite.radiansToDegrees(lookAngles.azimuth);
             const el = satellite.radiansToDegrees(lookAngles.elevation);
             
-            // Cálculo Doppler exacto (rangeRate en km/s)
+            // Cálculo Doppler exacto
             const rangeRate = lookAngles.rangeRate;
             const dopplerKhz = - (rangeRate / 299792.458) * SATELLITES.iss.freq * 1000;
-
             const compass = getCompassCard(az);
             
             const azEl = document.getElementById('iss-az');
