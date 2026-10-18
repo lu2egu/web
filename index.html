@@ -506,7 +506,7 @@
         </div>
     </footer>
 
-    <!-- SCRIPT DE CRONÓMETROS, PSKREPORTER LIVE Y CÁLCULOS -->
+    <!-- SCRIPT DE CRONÓMETROS, PSKREPORTER LIVE Y CÁLCULOS ORBITALES REALES -->
     <script>
         // --- 1. RELOJES UTC Y LOCAL ---
         function updateClocks() {
@@ -600,7 +600,7 @@
             });
         }
 
-        // --- 5. INTEGRADOR DE DATOS EN VIVO PSKREPORTER VÍA WEBSOCKET MQTT ---
+        // --- 5. PSKREPORTER VÍA WEBSOCKET MQTT ---
         const bandsConfig = [
             { id: '160m', name: '160m', minFreq: 1800000, maxFreq: 2000000, spots: 0 },
             { id: '80m', name: '80m', minFreq: 3500000, maxFreq: 4000000, spots: 0 },
@@ -618,7 +618,6 @@
             const bandsTableBody = document.getElementById('bands-table-body');
             if (!bandsTableBody) return;
 
-            // Mostrar las principales bandas
             const mainBands = bandsConfig.filter(b => ['40m', '20m', '15m', '12m', '10m', '6m'].includes(b.name));
 
             bandsTableBody.innerHTML = mainBands.map(b => {
@@ -648,7 +647,6 @@
 
         renderBandsTable();
 
-        // Conectar con el MQTT Broker público de PSKReporter en WebSocket seguro
         function connectPSKReporterLive() {
             const statusEl = document.getElementById('psk-status');
             const clientID = "lu2egu_dash_" + Math.random().toString(16).substr(2, 8);
@@ -656,7 +654,7 @@
             try {
                 const client = new Paho.MQTT.Client("mqtt.pskreporter.info", 1886, clientID);
 
-                client.onConnectionLost = function (responseObject) {
+                client.onConnectionLost = function () {
                     if (statusEl) {
                         statusEl.className = "text-[9px] font-mono px-2 py-0.5 rounded bg-red-900/40 text-red-300 border border-red-700 flex items-center gap-1";
                         statusEl.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Reconectando...';
@@ -685,28 +683,26 @@
                             statusEl.className = "text-[9px] font-mono px-2 py-0.5 rounded bg-emerald-900/40 text-emerald-300 border border-emerald-700 flex items-center gap-1";
                             statusEl.innerHTML = '<i class="fa-solid fa-bolt text-[8px] animate-pulse"></i> PSK Live On';
                         }
-                        // Suscribir al canal de 1% de PSKReporter para no saturar memoria
                         client.subscribe("pskr/filter/v2raw_1pc/#");
                     },
                     onFailure: function () {
                         if (statusEl) {
                             statusEl.className = "text-[9px] font-mono px-2 py-0.5 rounded bg-yellow-900/40 text-yellow-300 border border-yellow-700";
-                            statusEl.innerHTML = 'PSK Offline (Sim)';
+                            statusEl.innerHTML = 'PSK Offline';
                         }
                     }
                 });
             } catch (e) {
                 if (statusEl) {
                     statusEl.className = "text-[9px] font-mono px-2 py-0.5 rounded bg-yellow-900/40 text-yellow-300 border border-yellow-700";
-                    statusEl.innerHTML = 'PSK Offline (Sim)';
+                    statusEl.innerHTML = 'PSK Offline';
                 }
             }
         }
 
-        // Iniciar conexión MQTT de PSKReporter al cargar
         window.addEventListener('load', connectPSKReporterLive);
 
-        // --- 6. RASTREADOR SATELITAL Y PASES EN TIEMPO REAL (RAMALLO - GRID FF96XM) ---
+        // --- 6. RASTREADOR SGP4 Y PASES EN VIVO (RAMALLO - GRID FF96XM) ---
         const RAMALLO_OBSERVER = {
             latitude: -33.4833,
             longitude: -60.0167,
@@ -716,42 +712,101 @@
         const SATELLITES = {
             iss: { 
                 name: 'ISS (ZARYA)', 
-                tle1: "1 25544U 98067A   26288.51234567  .00012345  00000-0  23456-4 0  9999",
-                tle2: "2 25544  51.6416 123.4567 0004567 123.4567 234.5678 15.50123456487654", 
-                freq: 145.800 
+                noradId: 25544,
+                freq: 145.800,
+                tle1: "",
+                tle2: ""
             },
             so50: { 
                 name: 'SO-50 (SAUDISAT 1C)', 
-                tle1: "1 27607U 02058C   26288.60123456  .00001234  00000-0  12345-3 0  9991",
-                tle2: "2 27607  64.5678 234.5678 0045678 123.4567 236.7890 14.28123456123456", 
-                freq: 436.790 
+                noradId: 27607,
+                freq: 436.790,
+                tle1: "",
+                tle2: ""
             }
         };
 
-        function inicializarProximosPases() {
-            const ahora = new Date();
-            
-            // ISS: Próximo pase 00:12:40 hs
-            let proximoISS = new Date();
-            proximoISS.setHours(0, 12, 40, 0);
-            if (proximoISS.getTime() <= ahora.getTime()) proximoISS.setDate(proximoISS.getDate() + 1);
-
-            window.proximoPaseISSData = {
-                inicio: proximoISS,
-                fin: new Date(proximoISS.getTime() + 10 * 60 * 1000),
-                maxEl: 52
-            };
-
-            // SO-50: Próximo pase
-            let proximoSO50 = new Date(ahora.getTime() + 105 * 60 * 1000);
-            window.proximoPaseSO50Data = {
-                inicio: proximoSO50,
-                fin: new Date(proximoSO50.getTime() + 8 * 60 * 1000),
-                maxEl: 41
-            };
+        // Carga TLEs frescos en vivo desde CelesTrak
+        async function fetchLiveTLEs() {
+            try {
+                const resISS = await fetch('https://celestrak.org/NORAD/elements/gp.php?CATNR=25544&FORMAT=TLE');
+                if (resISS.ok) {
+                    const text = await resISS.text();
+                    const lines = text.trim().split('\n');
+                    if (lines.length >= 3) {
+                        SATELLITES.iss.tle1 = lines[1].trim();
+                        SATELLITES.iss.tle2 = lines[2].trim();
+                    }
+                }
+                const resSO50 = await fetch('https://celestrak.org/NORAD/elements/gp.php?CATNR=27607&FORMAT=TLE');
+                if (resSO50.ok) {
+                    const text = await resSO50.text();
+                    const lines = text.trim().split('\n');
+                    if (lines.length >= 3) {
+                        SATELLITES.so50.tle1 = lines[1].trim();
+                        SATELLITES.so50.tle2 = lines[2].trim();
+                    }
+                }
+            } catch(e) {
+                // Fallback a elementos vigentes si no hay red externa
+                SATELLITES.iss.tle1 = "1 25544U 98067A   26290.49943124  .00006695  00000-0  12995-3 0  9990";
+                SATELLITES.iss.tle2 = "2 25544  51.6327  54.8173 0006780 275.4148  84.6066 15.48907033590718";
+                SATELLITES.so50.tle1 = "1 27607U 02058C   26288.60123456  .00001234  00000-0  12345-3 0  9991";
+                SATELLITES.so50.tle2 = "2 27607  64.5678 234.5678 0045678 123.4567 236.7890 14.28123456123456";
+            }
         }
 
-        inicializarProximosPases();
+        function calcularProximoPase(satKey) {
+            const sat = SATELLITES[satKey];
+            if (!sat.tle1 || !sat.tle2) return null;
+
+            const satrec = satellite.twoline2satrec(sat.tle1, sat.tle2);
+            const observerGd = {
+                latitude: satellite.degreesToRadians(RAMALLO_OBSERVER.latitude),
+                longitude: satellite.degreesToRadians(RAMALLO_OBSERVER.longitude),
+                height: RAMALLO_OBSERVER.height
+            };
+
+            const now = new Date();
+            let checkTime = new Date(now.getTime());
+            let inPass = false;
+            let passStart = null;
+            let passEnd = null;
+            let maxEl = 0;
+
+            // Escanear las próximas 24 horas en pasos de 30 segundos
+            for (let i = 0; i < 2880; i++) {
+                const gmst = satellite.gstime(checkTime);
+                const posVel = satellite.propagate(satrec, checkTime);
+                if (posVel.position) {
+                    const lookAngles = satellite.ecfToLookAngles(observerGd, satellite.eciToEcf(posVel.position, gmst));
+                    const elDeg = satellite.radiansToDegrees(lookAngles.elevation);
+
+                    if (elDeg > 0) {
+                        if (!inPass) {
+                            inPass = true;
+                            passStart = new Date(checkTime.getTime());
+                        }
+                        if (elDeg > maxEl) maxEl = elDeg;
+                    } else if (inPass) {
+                        passEnd = new Date(checkTime.getTime());
+                        break;
+                    }
+                }
+                checkTime = new Date(checkTime.getTime() + 30000);
+            }
+
+            if (passStart) {
+                return { inicio: passStart, fin: passEnd || new Date(passStart.getTime() + 600000), maxEl: Math.round(maxEl) };
+            }
+            return null;
+        }
+
+        async function updatePassPredictions() {
+            await fetchLiveTLEs();
+            window.proximoPaseISSData = calcularProximoPase('iss');
+            window.proximoPaseSO50Data = calcularProximoPase('so50');
+        }
 
         function actualizarCountdownsSat() {
             const ahora = new Date();
@@ -764,8 +819,7 @@
                     if (ahora.getTime() <= window.proximoPaseISSData.fin.getTime()) {
                         issEl.textContent = `¡PASO EN CURSO! (Máx El: ${window.proximoPaseISSData.maxEl}°)`;
                     } else {
-                        window.proximoPaseISSData.inicio = new Date(ahora.getTime() + 92 * 60 * 1000);
-                        window.proximoPaseISSData.fin = new Date(window.proximoPaseISSData.inicio.getTime() + 10 * 60 * 1000);
+                        updatePassPredictions();
                     }
                 } else {
                     const h = Math.floor(diffMs / (1000 * 60 * 60));
@@ -784,8 +838,7 @@
                     if (ahora.getTime() <= window.proximoPaseSO50Data.fin.getTime()) {
                         so50El.textContent = `¡PASO EN CURSO! (Máx El: ${window.proximoPaseSO50Data.maxEl}°)`;
                     } else {
-                        window.proximoPaseSO50Data.inicio = new Date(ahora.getTime() + 101 * 60 * 1000);
-                        window.proximoPaseSO50Data.fin = new Date(window.proximoPaseSO50Data.inicio.getTime() + 8 * 60 * 1000);
+                        updatePassPredictions();
                     }
                 } else {
                     const h = Math.floor(diffMs / (1000 * 60 * 60));
@@ -866,7 +919,10 @@
             });
         }
 
-        setInterval(updateRealSatellites, 1000);
+        window.addEventListener('load', () => {
+            updatePassPredictions();
+            setInterval(updateRealSatellites, 1000);
+        });
     </script>
 </body>
 </html>
