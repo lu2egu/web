@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Librería satellite.js para cálculos orbitales SGP4 -->
+    <!-- Librería satellite.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/satellite.js/5.0.0/satellite.min.js"></script>
     
     <script>
@@ -60,12 +60,13 @@
             box-shadow: 0 0 15px rgba(0, 243, 255, 0.1);
         }
 
-        /* FIX 3D PERSPECTIVE & CONTAINER ISOLATION */
+        /* ESTRUCTURA 3D FIJA Y AISLADA (EVITA DESPLAZAMIENTOS) */
         .perspective-1000 {
-            perspective: 1200px;
+            perspective: 1000px;
             isolation: isolate;
             position: relative;
-            z-index: 10;
+            z-index: 20;
+            height: 420px;
         }
 
         .qsl-card-inner {
@@ -84,7 +85,8 @@
 
         .qsl-card-front, .qsl-card-back {
             position: absolute;
-            inset: 0;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
             -webkit-backface-visibility: hidden;
@@ -114,14 +116,6 @@
         }
         ::-webkit-scrollbar-thumb:hover {
             background: #00f3ff;
-        }
-
-        @keyframes pulse-fast {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.4; transform: scale(0.95); }
-        }
-        .animate-pulse-led {
-            animation: pulse-fast 1.5s infinite;
         }
 
         @media print {
@@ -200,7 +194,7 @@
     <main class="max-w-7xl mx-auto w-full px-4 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6 flex-grow items-start">
 
         <!-- SECCIÓN IZQUIERDA: TARJETA QSL INTERACTIVA 3D -->
-        <section class="lg:col-span-7 flex flex-col gap-5">
+        <section class="lg:col-span-7 flex flex-col gap-4">
             
             <div class="flex items-center justify-between no-print">
                 <div class="flex items-center gap-2">
@@ -212,12 +206,12 @@
                 </span>
             </div>
 
-            <!-- QSL CONTAINER PERSPECTIVE CON ALTURA ESTÁTICA Y Z-INDEX AISLADO -->
-            <div id="print-area" class="perspective-1000 w-full h-[440px]">
-                <div id="qsl-card-inner" class="qsl-card-inner shadow-2xl cursor-pointer">
+            <!-- CONTENEDOR TARJETA 3D -->
+            <div id="print-area" class="perspective-1000 w-full">
+                <div id="qsl-card-inner" class="qsl-card-inner shadow-2xl">
 
                     <!-- FRENTE DE LA TARJETA QSL -->
-                    <div class="qsl-card-front qsl-printable glass-panel glass-panel-glow p-6 flex flex-col justify-between border-2 border-cyan-500/40 overflow-hidden bg-gradient-to-br from-gray-900 via-gray-950 to-cyan-950/40">
+                    <div class="qsl-card-front qsl-printable glass-panel glass-panel-glow p-6 flex flex-col justify-between border-2 border-cyan-500/40 relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-950 to-cyan-950/40">
                         <div class="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
                             <i class="fa-solid fa-earth-americas text-[280px] text-cyan-400"></i>
                         </div>
@@ -237,7 +231,7 @@
                             </div>
                         </div>
 
-                        <!-- QSL Middle Info (Editable) -->
+                        <!-- QSL Middle Info -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 my-2 z-10">
                             <div class="bg-gray-900/60 p-2.5 rounded-lg border border-gray-800/80">
                                 <label class="text-[10px] text-gray-400 uppercase font-semibold block">Operador / Titular</label>
@@ -273,7 +267,7 @@
                     </div>
 
                     <!-- REVERSO DE LA TARJETA QSL -->
-                    <div class="qsl-card-back qsl-printable glass-panel p-6 flex flex-col justify-between border-2 border-goldAccent/40 overflow-hidden bg-gradient-to-br from-gray-950 via-gray-900 to-amber-950/20">
+                    <div class="qsl-card-back qsl-printable glass-panel p-6 flex flex-col justify-between border-2 border-goldAccent/40 relative overflow-hidden bg-gradient-to-br from-gray-950 via-gray-900 to-amber-950/20">
                         <div>
                             <div class="flex justify-between items-center border-b border-goldAccent/30 pb-2 mb-3">
                                 <div class="flex items-center gap-2">
@@ -500,7 +494,7 @@
                             </tr>
                         </thead>
                         <tbody id="bands-table-body" class="divide-y divide-gray-800/60">
-                            <!-- Inyectado dinámicamente con JavaScript -->
+                            <!-- Inyectado dinámicamente -->
                         </tbody>
                     </table>
                 </div>
@@ -523,7 +517,7 @@
 
                 <div class="space-y-4" id="satellites-container">
                     
-                    <!-- ISS Card (Seguimiento & Próximo Pase) -->
+                    <!-- ISS Card -->
                     <div class="bg-gray-900/80 p-3.5 rounded-xl border border-gray-800 hover:border-cyan-500/40 transition">
                         <div class="flex justify-between items-start mb-2">
                             <div>
@@ -552,7 +546,7 @@
                         </div>
                     </div>
 
-                    <!-- SO-50 Card (Seguimiento & Próximo Pase) -->
+                    <!-- SO-50 Card -->
                     <div class="bg-gray-900/80 p-3.5 rounded-xl border border-gray-800 hover:border-cyan-500/40 transition">
                         <div class="flex justify-between items-start mb-2">
                             <div>
@@ -613,7 +607,7 @@
         setInterval(updateClocks, 1000);
         updateClocks();
 
-        // --- 2. TARJETA QSL INTERACTIVA (VOLTEO 3D SEGURO) ---
+        // --- 2. TARJETA QSL INTERACTIVA ---
         const cardInner = document.getElementById('qsl-card-inner');
         const btnFlip = document.getElementById('btn-flip-card');
         
@@ -624,7 +618,6 @@
             });
             
             cardInner.addEventListener('click', (e) => {
-                // Evitar voltear si se hace clic dentro de un input
                 if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'SELECT') {
                     cardInner.classList.toggle('flipped');
                 }
@@ -750,11 +743,11 @@
             }
         };
 
-        // Definición de próximos pases ajustados para Ramallo (Horario Local)
+        // Inicialización de próximos pases
         function inicializarProximosPases() {
             const ahora = new Date();
             
-            // ISS: Ajustada a las 00:12:40 hs
+            // ISS: Próximo pase 00:12:40 hs
             let proximoISS = new Date();
             proximoISS.setHours(0, 12, 40, 0);
             if (proximoISS.getTime() <= ahora.getTime()) proximoISS.setDate(proximoISS.getDate() + 1);
@@ -765,21 +758,22 @@
                 maxEl: 52
             };
 
-            // SO-50: Ajustado provisionalmente a +2h 15m del horario actual
-            let proximoSO50 = new Date(ahora.getTime() + 135 * 60 * 1000);
+            // SO-50: Próximo pase estimado en 1h 45m
+            let proximoSO50 = new Date(ahora.getTime() + 105 * 60 * 1000);
             window.proximoPaseSO50Data = {
                 inicio: proximoSO50,
                 fin: new Date(proximoSO50.getTime() + 8 * 60 * 1000),
-                maxEl: 38
+                maxEl: 41
             };
         }
 
         inicializarProximosPases();
 
+        // Actualizar cuentas regresivas dinámicas (ISS & SO-50)
         function actualizarCountdownsSat() {
             const ahora = new Date();
 
-            // 1. ISS Countdown
+            // 1. Cuenta regresiva ISS
             const issEl = document.getElementById('iss-countdown');
             if (issEl && window.proximoPaseISSData) {
                 const diffMs = window.proximoPaseISSData.inicio.getTime() - ahora.getTime();
@@ -799,7 +793,7 @@
                 }
             }
 
-            // 2. SO-50 Countdown
+            // 2. Cuenta regresiva SO-50
             const so50El = document.getElementById('so50-countdown');
             if (so50El && window.proximoPaseSO50Data) {
                 const diffMs = window.proximoPaseSO50Data.inicio.getTime() - ahora.getTime();
@@ -820,6 +814,7 @@
             }
         }
 
+        // Bucle principal de actualización orbital en tiempo real
         function updateRealSatellites() {
             const now = new Date();
             const gmst = satellite.gstime(now);
@@ -832,7 +827,7 @@
 
             actualizarCountdownsSat();
 
-            // 1. ISS Tracking
+            // 1. Procesar ISS (Azimut, Elevación, Doppler)
             if (SATELLITES.iss.tle1 && SATELLITES.iss.tle2) {
                 const satrec = satellite.twoline2satrec(SATELLITES.iss.tle1, SATELLITES.iss.tle2);
                 const positionAndVelocity = satellite.propagate(satrec, now);
@@ -856,7 +851,7 @@
                 }
             }
 
-            // 2. SO-50 Tracking
+            // 2. Procesar SO-50 (Azimut, Elevación)
             if (SATELLITES.so50.tle1 && SATELLITES.so50.tle2) {
                 const satrec = satellite.twoline2satrec(SATELLITES.so50.tle1, SATELLITES.so50.tle2);
                 const positionAndVelocity = satellite.propagate(satrec, now);
