@@ -879,7 +879,7 @@
             }
             renderBandsTable();
 
-            // --- 7. RASTREADOR SATELITAL REAL SOBRE RAMALLO ---
+            // --- 6. RASTREADOR SATELITAL REAL SOBRE RAMALLO ---
 
 // Coordenadas geográficas de Ramallo, Buenos Aires, Argentina
 const RAMALLO_OBSERVER = {
@@ -908,12 +908,114 @@ async function fetchTLEs() {
                 console.log(`TLE actualizado para ${sat.name}`);
             }
         }
+        // Una vez descargados los TLEs, calculamos el próximo pase de inmediato
+        calcularProximoPaseISS();
     } catch (error) {
         console.error("Error al actualizar los TLEs de CelesTrak:", error);
+        const countdownEl = document.getElementById('iss-countdown');
+        if (countdownEl) countdownEl.textContent = "Error al cargar TLEs";
     }
 }
 
-// Función principal de cálculo orbital en tiempo real
+// Función para predecir el próximo pase de la ISS con elevación máxima > 10°
+function calcularProximoPaseISS() {
+    const iss = SATELLITES.iss;
+    const countdownEl = document.getElementById('iss-countdown');
+    if (!iss.tle1 || !iss.tle2 || !countdownEl) return;
+
+    const satrec = satellite.twoline2satrec(iss.tle1, iss.tle2);
+    const observerGd = {
+        latitude: satellite.degreesToRadians(RAMALLO_OBSERVER.latitude),
+        longitude: satellite.degreesToRadians(RAMALLO_OBSERVER.longitude),
+        height: RAMALLO_OBSERVER.height
+    };
+
+    let tiempoActual = new Date();
+    let enPase = false;
+    let maxElPase = 0;
+    let inicioPase = null;
+    let finPase = null;
+
+    // Buscamos en intervalos de 30 segundos hacia adelante (hasta las próximas 48 horas)
+    const pasoSimulacionMs = 30 * 1000;
+    const limiteMaxMs = Date.now() + (48 * 60 * 60 * 1000);
+
+    let t = new Date(tiempoActual.getTime());
+
+    while (t.getTime() < limiteMaxMs) {
+        const gmst = satellite.gstime(t);
+        const positionAndVelocity = satellite.propagate(satrec, t);
+
+        if (positionAndVelocity.position) {
+            const lookAngles = satellite.ecfToLookAngles(observerGd, satellite.eciToEcf(positionAndVelocity.position, gmst));
+            const el = satellite.radiansToDegrees(lookAngles.elevation);
+
+            if (el > 0) { // El satélite está sobre el horizonte
+                if (!enPase) {
+                    enPase = true;
+                    inicioPase = new Date(t.getTime());
+                    maxElPase = el;
+                } else {
+                    if (el > maxElPase) {
+                        maxElPase = el;
+                    }
+                }
+            } else {
+                if (enPase) {
+                    // Fin del pase detectado
+                    finPase = new Date(t.getTime());
+                    // Verificamos si es un pase relevante (ej. elevación máxima mayor a 10 grados)
+                    if (maxElPase >= 10 && inicioPase.getTime() > tiempoActual.getTime()) {
+                        window.proximoPaseISSData = {
+                            inicio: inicioPase,
+                            fin: finPase,
+                            maxEl: maxElPase
+                        };
+                        actualizarTextoCountdown();
+                        return;
+                    }
+                    enPase = false;
+                    maxElPase = 0;
+                }
+            }
+        }
+        t = new Date(t.getTime() + pasoSimulacionMs);
+    }
+
+    countdownEl.textContent = "No se encuentra próximo pase visible";
+}
+
+// Actualiza el texto dinámicamente cada segundo en el DOM
+function actualizarTextoCountdown() {
+    const countdownEl = document.getElementById('iss-countdown');
+    if (!countdownEl || !window.proximoPaseISSData) return;
+
+    const ahora = new Date();
+    const inicio = window.proximoPaseISSData.inicio;
+    const diffMs = inicio.getTime() - ahora.getTime();
+
+    if (diffMs <= 0) {
+        // Si el pase ya comenzó o está en curso
+        const fin = window.proximoPaseISSData.fin;
+        if (ahora.getTime() <= fin.getTime()) {
+            countdownEl.textContent = `¡PASO EN CURSO! (Máx El: ${window.proximoPaseISSData.maxEl.toFixed(0)}°)`;
+        } else {
+            // Si ya pasó, recalculamos el siguiente
+            calcularProximoPaseISS();
+        }
+        return;
+    }
+
+    // Formatear cuenta regresiva (Horas, Minutos, Segundos)
+    const horas = Math.floor(diffMs / (1000 * 60 * 60));
+    const minutos = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+    const segundos = Math.floor((diffMs % (1000 * 60)) / 1000);
+
+    const horaLocalStr = inicio.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    countdownEl.textContent = `En ${horas}h ${minutos}m ${segundos}s (A las ${horaLocalStr} - Máx El: ${window.proximoPaseISSData.maxEl.toFixed(0)}°)`;
+}
+
+// Función principal de cálculo orbital en tiempo real (posición, elevación y Doppler)
 function updateRealSatellites() {
     const now = new Date();
     const gmst = satellite.gstime(now);
@@ -924,6 +1026,9 @@ function updateRealSatellites() {
         longitude: satellite.degreesToRadians(RAMALLO_OBSERVER.longitude),
         height: RAMALLO_OBSERVER.height
     };
+
+    // Actualizar cuenta regresiva del próximo pase de la ISS cada segundo
+    actualizarTextoCountdown();
 
     // 1. Procesar ISS
     if (SATELLITES.iss.tle1 && SATELLITES.iss.tle2) {
@@ -943,9 +1048,13 @@ function updateRealSatellites() {
 
             const compass = getCompassCard(az);
             
-            document.getElementById('iss-az').textContent = `${az.toFixed(1)}° (${compass})`;
-            document.getElementById('iss-el').textContent = `${el.toFixed(1)}°`;
-            document.getElementById('iss-doppler').textContent = `${dopplerKhz >= 0 ? '+' : ''}${dopplerKhz.toFixed(1)} kHz`;
+            const azEl = document.getElementById('iss-az');
+            const elEl = document.getElementById('iss-el');
+            const dopEl = document.getElementById('iss-doppler');
+
+            if (azEl) azEl.textContent = `${az.toFixed(1)}° (${compass})`;
+            if (elEl) elEl.textContent = `${el.toFixed(1)}°`;
+            if (dopEl) dopEl.textContent = `${dopplerKhz >= 0 ? '+' : ''}${dopplerKhz.toFixed(1)} kHz`;
         }
     }
 
@@ -962,8 +1071,11 @@ function updateRealSatellites() {
             const el = satellite.radiansToDegrees(lookAngles.elevation);
             const compass = getCompassCard(az);
 
-            document.getElementById('so50-az').textContent = `${az.toFixed(1)}° (${compass})`;
-            document.getElementById('so50-el').textContent = `${el.toFixed(1)}°`;
+            const so50AzEl = document.getElementById('so50-az');
+            const so50ElEl = document.getElementById('so50-el');
+
+            if (so50AzEl) so50AzEl.textContent = `${az.toFixed(1)}° (${compass})`;
+            if (so50ElEl) so50ElEl.textContent = `${el.toFixed(1)}°`;
         }
     }
 }
@@ -975,16 +1087,19 @@ function getCompassCard(az) {
     return directions[index % 16];
 }
 
-// Evento del botón de Doppler (lo dejamos operativo)
-document.getElementById('btn-doppler-sim').addEventListener('click', () => {
-    alert("Control de Doppler activado: Compensación de corrimiento de frecuencia sintonizada para estaciones terrenas.");
-});
+// Evento del botón de Doppler
+const btnDoppler = document.getElementById('btn-doppler-sim');
+if (btnDoppler) {
+    btnDoppler.addEventListener('click', () => {
+        alert("Control de Doppler activado: Compensación de corrimiento de frecuencia sintonizada para estaciones terrenas.");
+    });
+}
 
 // Inicialización: Descargar TLEs al arrancar y refrescar cada 6 horas
 fetchTLEs();
 setInterval(fetchTLEs, 6 * 60 * 60 * 1000); 
 
-// Actualizar la posición visualizada en pantalla cada 1 segundo
+// Actualizar la posición visualizada y la cuenta regresiva en pantalla cada 1 segundo
 setInterval(updateRealSatellites, 1000);
 
             // --- 7. SISTEMA DE SEGURIDAD PARA LOOP Y END-FED EN RAMALLO ---
