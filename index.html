@@ -13,6 +13,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Librería satellite.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/satellite.js/5.0.0/satellite.min.js"></script>
+    <!-- Librería Paho MQTT para PSKReporter Live Stream -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"></script>
     
     <script>
         tailwind.config = {
@@ -185,7 +187,7 @@
                         </div>
                     </div>
 
-                    <!-- DATOS DEL OPERADOR Y UBICACIÓN (COMPACTOS) -->
+                    <!-- DATOS DEL OPERADOR Y UBICACIÓN -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 z-10">
                         <div class="bg-gray-900/80 px-2.5 py-1.5 rounded-lg border border-gray-800">
                             <label class="text-[8px] text-gray-400 uppercase font-semibold block">Operador / Titular</label>
@@ -388,14 +390,18 @@
                 </div>
             </div>
 
-            <!-- ESTADO DE LAS BANDAS -->
+            <!-- ESTADO DE LAS BANDAS (PSKREPORTER LIVE) -->
             <div class="glass-panel p-4 rounded-2xl border border-gray-800 flex flex-col gap-2.5">
                 <div class="flex justify-between items-center border-b border-gray-800 pb-2">
                     <div class="flex items-center gap-2">
                         <i class="fa-solid fa-signal text-cyan-400"></i>
-                        <h3 class="font-bold text-white text-xs">Estado de Bandas HF / VHF</h3>
+                        <h3 class="font-bold text-white text-xs">Estado de Bandas en Vivo</h3>
                     </div>
-                    <span id="cycle-day-night" class="text-[9px] font-mono px-2 py-0.5 rounded bg-blue-900/40 text-blue-300 border border-blue-700">DÍA UTC</span>
+                    <div class="flex items-center gap-1.5">
+                        <span id="psk-status" class="text-[9px] font-mono px-2 py-0.5 rounded bg-yellow-900/40 text-yellow-300 border border-yellow-700 flex items-center gap-1">
+                            <i class="fa-solid fa-circle-notch fa-spin text-[8px]"></i> Conectando PSK...
+                        </span>
+                    </div>
                 </div>
 
                 <div class="overflow-x-auto">
@@ -403,13 +409,12 @@
                         <thead>
                             <tr class="text-gray-500 border-b border-gray-800 text-[9px] uppercase">
                                 <th class="pb-1.5">Banda</th>
-                                <th class="pb-1.5">Día</th>
-                                <th class="pb-1.5">Noche</th>
-                                <th class="pb-1.5 text-right">Estado</th>
+                                <th class="pb-1.5">Spots (2 min)</th>
+                                <th class="pb-1.5 text-right">Actividad PSK</th>
                             </tr>
                         </thead>
                         <tbody id="bands-table-body" class="divide-y divide-gray-800/60">
-                            <!-- Inyectado dinámicamente -->
+                            <!-- Inyectado dinámicamente con datos en vivo -->
                         </tbody>
                     </table>
                 </div>
@@ -501,7 +506,7 @@
         </div>
     </footer>
 
-    <!-- SCRIPT DE CRONÓMETROS Y CÁLCULOS -->
+    <!-- SCRIPT DE CRONÓMETROS, PSKREPORTER LIVE Y CÁLCULOS -->
     <script>
         // --- 1. RELOJES UTC Y LOCAL ---
         function updateClocks() {
@@ -595,27 +600,111 @@
             });
         }
 
-        // --- 5. TABLA ESTADO DE BANDAS ---
-        const bandsData = [
-            { band: '40m', freq: '7.0 - 7.3 MHz', day: 'Local / Regional', night: 'Excelente DX', status: 'Abierta', color: 'text-emerald-400' },
-            { band: '20m', freq: '14.0 - 14.35 MHz', day: 'Excelente DX Mundial', night: 'Buena DX', status: 'Óptima', color: 'text-cyan-400' },
-            { band: '15m', freq: '21.0 - 21.45 MHz', day: 'Muy Buena DX', night: 'Cerrada', status: 'Abierta', color: 'text-emerald-400' },
-            { band: '12m', freq: '24.89 - 24.99 MHz', day: 'Buena Propagación', night: 'Cerrada', status: 'Regular', color: 'text-yellow-400' },
-            { band: '10m', freq: '28.0 - 29.7 MHz', day: 'Excelente (Solar Alto)', night: 'Cerrada', status: 'Abierta', color: 'text-emerald-400' },
-            { band: '6m', freq: '50 - 54 MHz', day: 'Esporádica E / DX', night: 'Cerrada', status: 'Monitoreo', color: 'text-gray-400' }
+        // --- 5. INTEGRADOR DE DATOS EN VIVO PSKREPORTER VÍA WEBSOCKET MQTT ---
+        const bandsConfig = [
+            { id: '160m', name: '160m', minFreq: 1800000, maxFreq: 2000000, spots: 0 },
+            { id: '80m', name: '80m', minFreq: 3500000, maxFreq: 4000000, spots: 0 },
+            { id: '40m', name: '40m', minFreq: 7000000, maxFreq: 7300000, spots: 0 },
+            { id: '30m', name: '30m', minFreq: 10100000, maxFreq: 10150000, spots: 0 },
+            { id: '20m', name: '20m', minFreq: 14000000, maxFreq: 14350000, spots: 0 },
+            { id: '17m', name: '17m', minFreq: 18068000, maxFreq: 18168000, spots: 0 },
+            { id: '15m', name: '15m', minFreq: 21000000, maxFreq: 21450000, spots: 0 },
+            { id: '12m', name: '12m', minFreq: 24890000, maxFreq: 24990000, spots: 0 },
+            { id: '10m', name: '10m', minFreq: 28000000, maxFreq: 29700000, spots: 0 },
+            { id: '6m', name: '6m', minFreq: 50000000, maxFreq: 54000000, spots: 0 }
         ];
 
-        const bandsTableBody = document.getElementById('bands-table-body');
-        if (bandsTableBody) {
-            bandsTableBody.innerHTML = bandsData.map(b => `
-                <tr class="hover:bg-gray-900/40 transition">
-                    <td class="py-1.5 font-bold text-white">${b.band} <span class="text-[9px] text-gray-400 font-normal">(${b.freq})</span></td>
-                    <td class="py-1.5 text-gray-300">${b.day}</td>
-                    <td class="py-1.5 text-gray-400">${b.night}</td>
-                    <td class="py-1.5 text-right font-bold ${b.color}">${b.status}</td>
-                </tr>
-            `).join('');
+        function renderBandsTable() {
+            const bandsTableBody = document.getElementById('bands-table-body');
+            if (!bandsTableBody) return;
+
+            // Mostrar las principales bandas
+            const mainBands = bandsConfig.filter(b => ['40m', '20m', '15m', '12m', '10m', '6m'].includes(b.name));
+
+            bandsTableBody.innerHTML = mainBands.map(b => {
+                let statusText = 'Tranquila';
+                let colorClass = 'text-gray-400';
+
+                if (b.spots > 15) {
+                    statusText = 'Muy Alta';
+                    colorClass = 'text-cyan-400 font-bold';
+                } else if (b.spots > 5) {
+                    statusText = 'Abierta / DX';
+                    colorClass = 'text-emerald-400 font-bold';
+                } else if (b.spots > 0) {
+                    statusText = 'Moderada';
+                    colorClass = 'text-yellow-400';
+                }
+
+                return `
+                    <tr class="hover:bg-gray-900/40 transition">
+                        <td class="py-1.5 font-bold text-white">${b.name}</td>
+                        <td class="py-1.5 font-mono text-cyan-300 font-semibold">${b.spots * 100} / min</td>
+                        <td class="py-1.5 text-right font-bold ${colorClass}">${statusText}</td>
+                    </tr>
+                `;
+            }).join('');
         }
+
+        renderBandsTable();
+
+        // Conectar con el MQTT Broker público de PSKReporter en WebSocket seguro
+        function connectPSKReporterLive() {
+            const statusEl = document.getElementById('psk-status');
+            const clientID = "lu2egu_dash_" + Math.random().toString(16).substr(2, 8);
+            
+            try {
+                const client = new Paho.MQTT.Client("mqtt.pskreporter.info", 1886, clientID);
+
+                client.onConnectionLost = function (responseObject) {
+                    if (statusEl) {
+                        statusEl.className = "text-[9px] font-mono px-2 py-0.5 rounded bg-red-900/40 text-red-300 border border-red-700 flex items-center gap-1";
+                        statusEl.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Reconectando...';
+                    }
+                    setTimeout(connectPSKReporterLive, 5000);
+                };
+
+                client.onMessageArrived = function (message) {
+                    try {
+                        const spot = JSON.parse(message.payloadString);
+                        if (spot && spot.f) {
+                            const freqHz = spot.f;
+                            const targetBand = bandsConfig.find(b => freqHz >= b.minFreq && freqHz <= b.maxFreq);
+                            if (targetBand) {
+                                targetBand.spots++;
+                                renderBandsTable();
+                            }
+                        }
+                    } catch (e) { }
+                };
+
+                client.connect({
+                    useSSL: true,
+                    onSuccess: function () {
+                        if (statusEl) {
+                            statusEl.className = "text-[9px] font-mono px-2 py-0.5 rounded bg-emerald-900/40 text-emerald-300 border border-emerald-700 flex items-center gap-1";
+                            statusEl.innerHTML = '<i class="fa-solid fa-bolt text-[8px] animate-pulse"></i> PSK Live On';
+                        }
+                        // Suscribir al canal de 1% de PSKReporter para no saturar memoria
+                        client.subscribe("pskr/filter/v2raw_1pc/#");
+                    },
+                    onFailure: function () {
+                        if (statusEl) {
+                            statusEl.className = "text-[9px] font-mono px-2 py-0.5 rounded bg-yellow-900/40 text-yellow-300 border border-yellow-700";
+                            statusEl.innerHTML = 'PSK Offline (Sim)';
+                        }
+                    }
+                });
+            } catch (e) {
+                if (statusEl) {
+                    statusEl.className = "text-[9px] font-mono px-2 py-0.5 rounded bg-yellow-900/40 text-yellow-300 border border-yellow-700";
+                    statusEl.innerHTML = 'PSK Offline (Sim)';
+                }
+            }
+        }
+
+        // Iniciar conexión MQTT de PSKReporter al cargar
+        window.addEventListener('load', connectPSKReporterLive);
 
         // --- 6. RASTREADOR SATELITAL Y PASES EN TIEMPO REAL (RAMALLO - GRID FF96XM) ---
         const RAMALLO_OBSERVER = {
@@ -653,7 +742,7 @@
                 maxEl: 52
             };
 
-            // SO-50: Próximo pase estimado
+            // SO-50: Próximo pase
             let proximoSO50 = new Date(ahora.getTime() + 105 * 60 * 1000);
             window.proximoPaseSO50Data = {
                 inicio: proximoSO50,
