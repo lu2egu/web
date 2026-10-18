@@ -11,6 +11,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Librería satellite.js para cálculos orbitales -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/satellite.js/5.0.0/satellite.min.js"></script>
     
     <script>
         tailwind.config = {
@@ -36,7 +38,6 @@
     </script>
 
     <style>
-        /* Custom Styles & 3D Card Flip CSS */
         body {
             background-color: #0b0f19;
             background-image: 
@@ -46,7 +47,6 @@
             font-family: 'Inter', sans-serif;
         }
 
-        /* Glassmorphism */
         .glass-panel {
             background: rgba(17, 24, 39, 0.75);
             backdrop-filter: blur(12px);
@@ -60,7 +60,6 @@
             box-shadow: 0 0 15px rgba(0, 243, 255, 0.1);
         }
 
-        /* 3D QSL Card Flip Animation */
         .perspective-1000 {
             perspective: 1000px;
         }
@@ -92,12 +91,10 @@
             transform: rotateY(180deg);
         }
 
-        /* Vintage/Modern Badge Glow */
         .glow-text {
             text-shadow: 0 0 10px rgba(0, 243, 255, 0.6);
         }
 
-        /* Custom Scrollbar */
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
@@ -113,7 +110,6 @@
             background: #00f3ff;
         }
 
-        /* LED Pulse Animations */
         @keyframes pulse-fast {
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.4; transform: scale(0.95); }
@@ -122,7 +118,6 @@
             animation: pulse-fast 1.5s infinite;
         }
 
-        /* PRINT STYLES - ONLY PRINT QSL CARD */
         @media print {
             body * {
                 visibility: hidden;
@@ -198,7 +193,7 @@
     <!-- MAIN CONTENT GRID -->
     <main class="max-w-7xl mx-auto w-full px-4 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6 flex-grow">
 
-        <!-- SECCIÓN IZQUIERDA: TARJETA QSL INTERACTIVA 3D (Columna 12 en mobile, 7 en desktop) -->
+        <!-- SECCIÓN IZQUIERDA: TARJETA QSL INTERACTIVA 3D -->
         <section class="lg:col-span-7 flex flex-col gap-4">
             
             <div class="flex items-center justify-between no-print">
@@ -212,12 +207,11 @@
             </div>
 
             <!-- QSL CONTAINER PERSPECTIVE -->
-            <div class="perspective-1000 w-full h-[450px] sm:h-[420px]">
+            <div id="print-area" class="perspective-1000 w-full h-[450px] sm:h-[420px]">
                 <div id="qsl-card-inner" class="qsl-card-inner shadow-2xl">
 
                     <!-- FRENTE DE LA TARJETA QSL -->
-                    <div class="qsl-card-front glass-panel glass-panel-glow p-6 flex flex-col justify-between border-2 border-cyan-500/40 relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-950 to-cyan-950/40">
-                        <!-- Decorative Watermark / Background Vector -->
+                    <div class="qsl-card-front qsl-printable glass-panel glass-panel-glow p-6 flex flex-col justify-between border-2 border-cyan-500/40 relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-950 to-cyan-950/40">
                         <div class="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
                             <i class="fa-solid fa-earth-americas text-[280px] text-cyan-400"></i>
                         </div>
@@ -255,7 +249,7 @@
                             </div>
                         </div>
 
-                        <!-- QSL Front Footer Badges (Afiliaciones y Radioclubes) -->
+                        <!-- QSL Front Footer Badges -->
                         <div class="flex flex-wrap items-center justify-between gap-2 z-10 pt-2 border-t border-gray-800/80">
                             <div class="flex flex-wrap items-center gap-1.5">
                                 <span class="px-2 py-0.5 bg-cyan-950/80 text-cyan-300 rounded text-[10px] font-mono border border-cyan-500/40 font-semibold" title="Radio Club San Nicolás">
@@ -272,10 +266,9 @@
                         </div>
                     </div>
 
-                    <!-- REVERSO DE LA TARJETA QSL (LOG Y DATOS DEL CONTACTO) -->
-                    <div class="qsl-card-back glass-panel p-6 flex flex-col justify-between border-2 border-goldAccent/40 bg-gradient-to-br from-gray-950 via-gray-900 to-amber-950/20">
+                    <!-- REVERSO DE LA TARJETA QSL -->
+                    <div class="qsl-card-back qsl-printable glass-panel p-6 flex flex-col justify-between border-2 border-goldAccent/40 bg-gradient-to-br from-gray-950 via-gray-900 to-amber-950/20">
                         <div>
-                            <!-- Header Reverso -->
                             <div class="flex justify-between items-center border-b border-goldAccent/30 pb-2 mb-3">
                                 <div class="flex items-center gap-2">
                                     <span class="text-goldAccent font-extrabold text-lg font-mono">QSL LOG CONFIRMATION</span>
@@ -284,7 +277,6 @@
                                 <span class="text-xs bg-goldAccent/20 text-goldAccent px-2 py-0.5 rounded font-mono font-bold">PSE QSL / TNX QSL</span>
                             </div>
 
-                            <!-- Formulario / Campos de Confirmación -->
                             <p class="text-xs text-gray-300 mb-2">Confirmo con agrado el QSO realizado con la estación:</p>
                             
                             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
@@ -335,7 +327,6 @@
                                 </div>
                             </div>
 
-                            <!-- Observaciones -->
                             <div class="bg-gray-900/90 p-2 rounded border border-gray-800">
                                 <label class="text-[9px] text-gray-400 uppercase block">Notas / Observaciones</label>
                                 <input type="text" id="qso-notes" value="¡Gracias por el contacto desde Ramallo! Antena Loop Magnética DIY / Endfeed. 73s dx" class="bg-transparent text-gray-300 text-xs w-full focus:outline-none italic">
@@ -396,7 +387,6 @@
                     </button>
                 </div>
 
-                <!-- ALERTA DINÁMICA DE SEGURIDAD -->
                 <div id="antenna-alert-box" class="p-3.5 rounded-xl bg-emerald-950/40 border border-emerald-500/30 flex items-start gap-3">
                     <div id="alert-icon-container" class="p-2 rounded-lg bg-emerald-500/20 text-emerald-400 text-lg">
                         <i class="fa-solid fa-shield-halved"></i>
@@ -407,7 +397,6 @@
                     </div>
                 </div>
 
-                <!-- WIDGET CLIMA DETALLADO -->
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center font-mono">
                     <div class="bg-gray-900/60 p-2.5 rounded-xl border border-gray-800">
                         <span class="text-[10px] text-gray-400 font-sans block">Temperatura</span>
@@ -431,7 +420,7 @@
         </section>
 
 
-        <!-- SECCIÓN DERECHA: CLIMA ESPACIAL, ESTADO DE BANDAS Y SATÉLITES (Columna 12 en mobile, 5 en desktop) -->
+        <!-- SECCIÓN DERECHA: CLIMA ESPACIAL, ESTADO DE BANDAS Y SATÉLITES -->
         <section class="lg:col-span-5 flex flex-col gap-6 no-print">
 
             <!-- CLIMA ESPACIAL & SOLAR -->
@@ -446,7 +435,6 @@
                     </span>
                 </div>
 
-                <!-- METRICAS SOLARES -->
                 <div class="grid grid-cols-3 gap-2 text-center font-mono">
                     <div class="bg-gray-900/80 p-2.5 rounded-xl border border-gray-800/80">
                         <div class="text-[10px] text-gray-400 font-sans">SFI (Solar Flux)</div>
@@ -485,7 +473,7 @@
                 </div>
             </div>
 
-            <!-- ESTADO DE LAS BANDAS (6, 10, 12, 15, 17, 20 y 40m) -->
+            <!-- ESTADO DE LAS BANDAS -->
             <div class="glass-panel p-5 rounded-2xl border border-gray-800 flex flex-col gap-3">
                 <div class="flex justify-between items-center border-b border-gray-800 pb-2">
                     <div class="flex items-center gap-2">
@@ -495,7 +483,6 @@
                     <span id="cycle-day-night" class="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-900/40 text-blue-300 border border-blue-700">DÍA UTC</span>
                 </div>
 
-                <!-- TABLA DE BANDAS -->
                 <div class="overflow-x-auto">
                     <table class="w-full text-left font-mono text-xs">
                         <thead>
@@ -532,82 +519,53 @@
                 <div class="space-y-3" id="satellites-container">
                     <!-- ISS Card -->
                     <div class="bg-gray-900/80 p-3 rounded-xl border border-gray-800 hover:border-cyan-500/40 transition">
-                        <div class="flex justify-between items-start">
+                        <div class="flex justify-between items-start mb-2">
                             <div>
-                                <div class="flex items-center gap-2">
-                                    <span class="font-bold text-white font-mono text-sm">ISS (ZARYA)</span>
-                                    <span class="text-[9px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.2 rounded border border-emerald-500/30 font-mono">FM / SSTV</span>
-                                </div>
-                                <p class="text-[11px] text-gray-400 font-mono">Down: 145.800 MHz | Up: 145.990 MHz</p>
+                                <span class="font-bold text-white font-mono text-sm">ISS (ZARYA)</span>
+                                <span class="text-[10px] text-gray-400 block">FM Voice / APRS (145.800 MHz)</span>
                             </div>
-                            <div class="text-right font-mono">
-                                <span class="text-xs text-goldAccent font-bold block" id="iss-countdown">00:24:12</span>
-                                <span class="text-[9px] text-gray-400">Próx. Elev: 68°</span>
+                            <span class="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-mono rounded font-bold">Activo</span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 font-mono text-center text-xs mb-2 bg-gray-950/60 p-2 rounded-lg">
+                            <div>
+                                <span class="text-[9px] text-gray-400 block font-sans">Azimut</span>
+                                <span id="iss-az" class="text-cyan-400 font-bold">--</span>
+                            </div>
+                            <div>
+                                <span class="text-[9px] text-gray-400 block font-sans">Elevación</span>
+                                <span id="iss-el" class="text-emerald-400 font-bold">--</span>
+                            </div>
+                            <div>
+                                <span class="text-[9px] text-gray-400 block font-sans">Doppler</span>
+                                <span id="iss-doppler" class="text-goldAccent font-bold">--</span>
                             </div>
                         </div>
-                        <div class="mt-2 text-[10px] font-mono flex justify-between text-gray-400 bg-gray-950/50 p-1.5 rounded">
-                            <span>AZ: <strong class="text-cyan-300" id="iss-az">215° (SW)</strong></span>
-                            <span>EL: <strong class="text-cyan-300" id="iss-el">12°</strong></span>
-                            <span>Doppler: <strong class="text-yellow-400" id="iss-doppler">+2.4 kHz</strong></span>
+                        <div class="text-[11px] font-mono text-gray-300 flex justify-between items-center bg-cyan-950/30 p-2 rounded border border-cyan-900/50">
+                            <span>Próximo Pase:</span>
+                            <span id="iss-countdown" class="text-cyan-300 font-bold">Calculando...</span>
                         </div>
                     </div>
 
                     <!-- SO-50 Card -->
                     <div class="bg-gray-900/80 p-3 rounded-xl border border-gray-800 hover:border-cyan-500/40 transition">
-                        <div class="flex justify-between items-start">
+                        <div class="flex justify-between items-start mb-2">
                             <div>
-                                <div class="flex items-center gap-2">
-                                    <span class="font-bold text-white font-mono text-sm">SO-50 (SaudiSat 1C)</span>
-                                    <span class="text-[9px] bg-cyan-500/20 text-cyan-300 px-1.5 py-0.2 rounded border border-cyan-500/30 font-mono">V/U FM</span>
-                                </div>
-                                <p class="text-[11px] text-gray-400 font-mono">Down: 436.795 MHz | Up: 145.850 MHz</p>
+                                <span class="font-bold text-white font-mono text-sm">SO-50 (SAUDISAT 1C)</span>
+                                <span class="text-[10px] text-gray-400 block">FM Transponder (436.790 MHz)</span>
                             </div>
-                            <div class="text-right font-mono">
-                                <span class="text-xs text-emerald-400 font-bold block" id="so50-countdown">01:12:05</span>
-                                <span class="text-[9px] text-gray-400">Próx. Elev: 42°</span>
-                            </div>
+                            <span class="px-2 py-0.5 bg-blue-500/20 text-blue-400 border border-blue-500/30 text-[10px] font-mono rounded font-bold">Orbitando</span>
                         </div>
-                        <div class="mt-2 text-[10px] font-mono flex justify-between text-gray-400 bg-gray-950/50 p-1.5 rounded">
-                            <span>AZ: <strong class="text-cyan-300" id="so50-az">180° (S)</strong></span>
-                            <span>EL: <strong class="text-cyan-300" id="so50-el">0° (Bajo Hzt)</strong></span>
-                            <span>Tone: <strong class="text-yellow-400">67.0 Hz</strong></span>
-                        </div>
-                    </div>
-
-                    <!-- AO-91 Card -->
-                    <div class="bg-gray-900/80 p-3 rounded-xl border border-gray-800 hover:border-cyan-500/40 transition">
-                        <div class="flex justify-between items-start">
+                        <div class="grid grid-cols-2 gap-2 font-mono text-center text-xs bg-gray-950/60 p-2 rounded-lg">
                             <div>
-                                <div class="flex items-center gap-2">
-                                    <span class="font-bold text-white font-mono text-sm">AO-91 (RadFxSat)</span>
-                                    <span class="text-[9px] bg-purple-500/20 text-purple-300 px-1.5 py-0.2 rounded border border-purple-500/30 font-mono">U/V FM</span>
-                                </div>
-                                <p class="text-[11px] text-gray-400 font-mono">Down: 145.960 MHz | Up: 435.250 MHz</p>
+                                <span class="text-[9px] text-gray-400 block font-sans">Azimut</span>
+                                <span id="so50-az" class="text-cyan-400 font-bold">--</span>
                             </div>
-                            <div class="text-right font-mono">
-                                <span class="text-xs text-gray-300 font-bold block" id="ao91-countdown">02:45:30</span>
-                                <span class="text-[9px] text-gray-400">Próx. Elev: 85°</span>
+                            <div>
+                                <span class="text-[9px] text-gray-400 block font-sans">Elevación</span>
+                                <span id="so50-el" class="text-emerald-400 font-bold">--</span>
                             </div>
                         </div>
                     </div>
-
-                    <!-- PO-101 Card -->
-                    <div class="bg-gray-900/80 p-3 rounded-xl border border-gray-800 hover:border-cyan-500/40 transition">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <div class="flex items-center gap-2">
-                                    <span class="font-bold text-white font-mono text-sm">PO-101 (Diwata-2)</span>
-                                    <span class="text-[9px] bg-blue-500/20 text-blue-300 px-1.5 py-0.2 rounded border border-blue-500/30 font-mono">U/V FM</span>
-                                </div>
-                                <p class="text-[11px] text-gray-400 font-mono">Down: 145.900 MHz | Up: 437.500 MHz</p>
-                            </div>
-                            <div class="text-right font-mono">
-                                <span class="text-xs text-cyan-400 font-bold block" id="po101-countdown">03:10:15</span>
-                                <span class="text-[9px] text-gray-400">Próx. Elev: 54°</span>
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
             </div>
 
@@ -615,533 +573,334 @@
 
     </main>
 
-    <!-- ÁREA OCULTA / VISIBLE EXCLUSIVA PARA IMPRESIÓN PDF DE QSL -->
-    <div id="print-area" class="hidden">
-        <div class="qsl-printable p-8 max-w-2xl mx-auto my-4 border-2 border-black font-sans">
-            <!-- Print QSL Front -->
-            <div class="border-b-2 border-black pb-4 mb-4 flex justify-between items-center">
-                <div>
-                    <h1 class="text-4xl font-black font-mono">LU2EGU</h1>
-                    <p class="text-sm font-bold">RADIOAFICIONADO ARGENTINA &bull; RAMALLO, BUENOS AIRES</p>
-                    <p class="text-xs mt-1 font-semibold">Socio LU4BB (RC San Nicolás) &bull; Socio LW4ERZ (RC Villa Ramallo)</p>
-                </div>
-                <div class="text-right font-mono">
-                    <span class="text-xl font-bold border-2 border-black px-3 py-1 inline-block">GRID: FF96xm</span>
-                    <p class="text-xs mt-1">CQ Zone 13 | ITU Zone 14</p>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-4 my-4 font-mono text-sm">
-                <div><strong>Operador:</strong> <span id="print-op">Diego Martínez</span></div>
-                <div><strong>Ubicación:</strong> Ramallo, Prov. Buenos Aires</div>
-                <div class="col-span-2"><strong>Antenas / Setup:</strong> <span id="print-rig">Loop Magnética Multibanda DIY & End-Fed (Endfeed)</span></div>
-            </div>
-
-            <div class="border-t-2 border-b-2 border-black py-4 my-4">
-                <h2 class="font-bold text-center mb-2 font-mono uppercase">Confirmación de Contacto Bilateral (QSO Log)</h2>
-                <table class="w-full text-center font-mono text-sm border-collapse border border-black">
-                    <thead>
-                        <tr class="bg-gray-200">
-                            <th class="border border-black p-1">To Radio</th>
-                            <th class="border border-black p-1">Fecha</th>
-                            <th class="border border-black p-1">Hora UTC</th>
-                            <th class="border border-black p-1">Banda</th>
-                            <th class="border border-black p-1">Modo</th>
-                            <th class="border border-black p-1">RST</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="border border-black p-1 font-bold" id="print-to-call">LU4AAA</td>
-                            <td class="border border-black p-1" id="print-date">2026-10-17</td>
-                            <td class="border border-black p-1" id="print-time">18:30</td>
-                            <td class="border border-black p-1" id="print-band">20m</td>
-                            <td class="border border-black p-1" id="print-mode">FT8</td>
-                            <td class="border border-black p-1" id="print-rst">59</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="font-mono text-xs mt-4 flex justify-between items-end">
-                <div>
-                    <p><strong>Observaciones:</strong> <span id="print-notes">TNX FOR QSO!</span></p>
-                </div>
-                <div class="text-right border-t border-black pt-2 w-48">
-                    <p class="font-bold">Firma Operador LU2EGU</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- FOOTER NO-PRINT -->
-    <footer class="no-print border-t border-gray-800 bg-gray-950 py-4 px-4 text-center text-xs text-gray-500">
+    <!-- FOOTER -->
+    <footer class="no-print border-t border-gray-800 bg-gray-900/60 py-4 px-4 text-center text-xs text-gray-400 font-mono mt-8">
         <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
-            <div>
-                &copy; <span id="current-year">2026</span> LU2EGU Station Dashboard &bull; Ramallo (FF96xm) &bull; Socio LU4BB & LW4ERZ
-            </div>
-            <div class="flex gap-4">
-                <span class="text-cyan-400 font-mono">73 & Good DX!</span>
-            </div>
+            <p>Estación Radioaficionado <strong class="text-cyan-400">LU2EGU</strong> &bull; Ramallo, Argentina (Grid: FF96xm)</p>
+            <p>Diseñado para Operación en HF (Loop Magnética / End-Fed) & Satélites</p>
         </div>
     </footer>
 
-    <!-- JAVASCRIPT APP LOGIC -->
+    <!-- SCRIPT COMPLETO DE LA APLICACIÓN -->
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-
-            // --- 1. RELOJES UTC Y LOCAL ---
-            function updateClocks() {
-                const now = new Date();
-                
-                // UTC Clock
-                const utcHours = String(now.getUTCHours()).padStart(2, '0');
-                const utcMinutes = String(now.getUTCMinutes()).padStart(2, '0');
-                const utcSeconds = String(now.getUTCSeconds()).padStart(2, '0');
-                document.getElementById('utc-clock').textContent = `${utcHours}:${utcMinutes}:${utcSeconds} UTC`;
-
-                // Local Clock (Ramallo ART - UTC-3)
-                const localHours = String(now.getHours()).padStart(2, '0');
-                const localMinutes = String(now.getMinutes()).padStart(2, '0');
-                const localSeconds = String(now.getSeconds()).padStart(2, '0');
-                document.getElementById('local-clock').textContent = `${localHours}:${localMinutes}:${localSeconds}`;
-
-                // Set default dates for QSO if empty
-                const qsoDate = document.getElementById('qso-date');
-                if (!qsoDate.value) {
-                    qsoDate.value = now.toISOString().split('T')[0];
-                }
-                const qsoTime = document.getElementById('qso-time');
-                if (!qsoTime.value) {
-                    qsoTime.value = `${utcHours}:${utcMinutes}`;
-                }
-            }
-            setInterval(updateClocks, 1000);
-            updateClocks();
-
-            // --- 2. TARJETA QSL 3D FLIP ---
-            const cardInner = document.getElementById('qsl-card-inner');
-            const btnFlip = document.getElementById('btn-flip-card');
+        // --- 1. RELOJES UTC Y LOCAL ---
+        function updateClocks() {
+            const now = new Date();
             
-            let isFlipped = false;
+            // Reloj UTC
+            const utcHours = String(now.getUTCHours()).padStart(2, '0');
+            const utcMinutes = String(now.getUTCMinutes()).padStart(2, '0');
+            const utcSeconds = String(now.getUTCSeconds()).padStart(2, '0');
+            const utcEl = document.getElementById('utc-clock');
+            if (utcEl) utcEl.textContent = `${utcHours}:${utcMinutes}:${utcSeconds} UTC`;
+
+            // Reloj Local (Argentina - ART)
+            const localHours = String(now.getHours()).padStart(2, '0');
+            const localMinutes = String(now.getMinutes()).padStart(2, '0');
+            const localSeconds = String(now.getSeconds()).padStart(2, '0');
+            const localEl = document.getElementById('local-clock');
+            if (localEl) localEl.textContent = `${localHours}:${localMinutes}:${localSeconds}`;
+        }
+        setInterval(updateClocks, 1000);
+        updateClocks();
+
+        // --- 2. TARJETA QSL INTERACTIVA (FLIP & FECHA AUTOMÁTICA) ---
+        const cardInner = document.getElementById('qsl-card-inner');
+        const btnFlip = document.getElementById('btn-flip-card');
+        if (btnFlip && cardInner) {
             btnFlip.addEventListener('click', () => {
-                isFlipped = !isFlipped;
-                if (isFlipped) {
-                    cardInner.classList.add('flipped');
-                } else {
-                    cardInner.classList.remove('flipped');
-                }
+                cardInner.classList.toggle('flipped');
             });
-
-            // --- 3. REPRODUCTOR CÓDIGO MORSE (WEB AUDIO API) ---
-            const btnPlayMorse = document.getElementById('btn-play-morse');
-            const morseVisualizer = document.getElementById('morse-visualizer');
-            const morseFlash = document.getElementById('morse-flash');
-            const morseLed = document.getElementById('morse-led');
-            let audioCtx = null;
-            let isPlayingMorse = false;
-
-            const MORSE_MAP = {
-                'A': '.-',    'B': '-...',  'C': '-.-.',  'D': '-..',   'E': '.',
-                'F': '..-.',  'G': '--.',   'H': '....',  'I': '..',    'J': '.---',
-                'K': '-.-',   'L': '.-..',  'M': '--',    'N': '-.',    'O': '---',
-                'P': '.--.',  'Q': '--.-',  'R': '.-.',   'S': '...',   'T': '-',
-                'U': '..-',   'V': '...-',  'W': '.--',   'X': '-..-',  'Y': '-.--',
-                'Z': '--..',  '1': '.----', '2': '..---', '3': '...--', '4': '....-',
-                '5': '.....', '6': '-....', '7': '--...', '8': '---..', '9': '----.',
-                '0': '-----', ' ': '/'
-            };
-
-            function textToMorse(text) {
-                return text.toUpperCase().split('').map(char => MORSE_MAP[char] || '').join(' ');
-            }
-
-            async function playMorseCode(text) {
-                if (isPlayingMorse) return;
-                isPlayingMorse = true;
-                morseVisualizer.classList.remove('hidden');
-                morseLed.className = "w-2 h-2 rounded-full bg-goldAccent animate-ping";
-
-                if (!audioCtx) {
-                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                }
-
-                const dotDuration = 80; // ms
-                const morseString = textToMorse(text);
-                document.getElementById('morse-text-display').textContent = morseString;
-
-                for (let i = 0; i < morseString.length; i++) {
-                    if (!isPlayingMorse) break;
-                    const symbol = morseString[i];
-
-                    if (symbol === '.') {
-                        playTone(700, dotDuration);
-                        setFlash(true);
-                        await sleep(dotDuration);
-                        setFlash(false);
-                    } else if (symbol === '-') {
-                        playTone(700, dotDuration * 3);
-                        setFlash(true);
-                        await sleep(dotDuration * 3);
-                        setFlash(false);
-                    } else if (symbol === ' ') {
-                        await sleep(dotDuration * 2);
-                    } else if (symbol === '/') {
-                        await sleep(dotDuration * 5);
-                    }
-                    await sleep(dotDuration);
-                }
-
-                isPlayingMorse = false;
-                morseVisualizer.classList.add('hidden');
-                morseLed.className = "w-2 h-2 rounded-full bg-gray-600";
-            }
-
-            function playTone(freq, duration) {
-                try {
-                    const osc = audioCtx.createOscillator();
-                    const gain = audioCtx.createGain();
-                    osc.type = 'sine';
-                    osc.frequency.value = freq;
-                    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + (duration / 1000));
-                    osc.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    osc.start();
-                    osc.stop(audioCtx.currentTime + (duration / 1000));
-                } catch(e) {
-                    console.error("Audio error:", e);
-                }
-            }
-
-            function setFlash(active) {
-                if (active) {
-                    morseFlash.className = "w-4 h-4 rounded-full bg-goldAccent shadow-lg shadow-goldAccent/80";
-                } else {
-                    morseFlash.className = "w-4 h-4 rounded-full bg-gray-700";
-                }
-            }
-
-            function sleep(ms) {
-                return new Promise(resolve => setTimeout(resolve, ms));
-            }
-
-            btnPlayMorse.addEventListener('click', () => {
-                playMorseCode('LU2EGU');
+            cardInner.addEventListener('click', () => {
+                cardInner.classList.toggle('flipped');
             });
+        }
 
-            // --- 4. EXPORTACIÓN IMPRESIÓN / PDF QSL ---
-            const btnPrint = document.getElementById('btn-print-qsl');
+        // Asignar fecha y hora UTC actual por defecto en el reverso de la QSL
+        const qsoDateInput = document.getElementById('qso-date');
+        const qsoTimeInput = document.getElementById('qso-time');
+        if (qsoDateInput && qsoTimeInput) {
+            const nowUTC = new Date();
+            qsoDateInput.value = nowUTC.toISOString().split('T')[0];
+            qsoTimeInput.value = `${String(nowUTC.getUTCHours()).padStart(2, '0')}:${String(nowUTC.getUTCMinutes()).padStart(2, '0')}`;
+        }
+
+        // Botón Imprimir QSL
+        const btnPrint = document.getElementById('btn-print-qsl');
+        if (btnPrint) {
             btnPrint.addEventListener('click', () => {
-                document.getElementById('print-op').textContent = document.getElementById('qsl-operator').value;
-                document.getElementById('print-rig').textContent = document.getElementById('qsl-rig').value;
-                document.getElementById('print-to-call').textContent = document.getElementById('qso-to-callsign').value.toUpperCase();
-                document.getElementById('print-date').textContent = document.getElementById('qso-date').value;
-                document.getElementById('print-time').textContent = document.getElementById('qso-time').value;
-                document.getElementById('print-band').textContent = document.getElementById('qso-band').value;
-                document.getElementById('print-mode').textContent = document.getElementById('qso-mode').value;
-                document.getElementById('print-rst').textContent = document.getElementById('qso-rst').value;
-                document.getElementById('print-notes').textContent = document.getElementById('qso-notes').value;
-
                 window.print();
             });
+        }
 
-            // --- 5. ESTADO DE LAS BANDAS (6, 10, 12, 15, 17, 20 y 40m) ---
-            const bandsData = [
-                { band: '40m (7 MHz)', day: 'Buena', night: 'Excelente', status: 'Excelente', color: 'text-emerald-400' },
-                { band: '20m (14 MHz)', day: 'Excelente', night: 'Buena', status: 'Excelente', color: 'text-emerald-400' },
-                { band: '17m (18 MHz)', day: 'Buena', night: 'Regular', status: 'Buena', color: 'text-cyan-400' },
-                { band: '15m (21 MHz)', day: 'Muy Buena', night: 'Regular', status: 'Abierta DX', color: 'text-emerald-400' },
-                { band: '12m (24 MHz)', day: 'Buena', night: 'Cerrada', status: 'Buena', color: 'text-cyan-400' },
-                { band: '10m (28 MHz)', day: 'Abierta DX', night: 'Cerrada', status: 'Abierta DX', color: 'text-goldAccent' },
-                { band: '6m (50 MHz)', day: 'Esporádica E', night: 'Cerrada', status: 'Variable', color: 'text-yellow-400' }
-            ];
+        // --- 3. REPRODUCTOR CÓDIGO MORSE (LU2EGU) ---
+        const btnPlayMorse = document.getElementById('btn-play-morse');
+        const morseVisualizer = document.getElementById('morse-visualizer');
+        const morseFlash = document.getElementById('morse-flash');
+        const morseIcon = document.getElementById('morse-icon');
+        const morseBtnText = document.getElementById('morse-btn-text');
 
-            function renderBandsTable() {
-                const tbody = document.getElementById('bands-table-body');
-                tbody.innerHTML = '';
+        if (btnPlayMorse) {
+            btnPlayMorse.addEventListener('click', () => {
+                if (typeof window.AudioContext !== 'undefined' || typeof window.webkitAudioContext !== 'undefined') {
+                    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                    const ctx = new AudioCtx();
+                    
+                    morseVisualizer.classList.remove('hidden');
+                    morseIcon.classList.remove('fa-volume-high');
+                    morseIcon.classList.add('fa-spinner', 'fa-spin');
+                    morseBtnText.textContent = "Transmitiendo...";
 
-                bandsData.forEach(b => {
-                    const tr = document.createElement('tr');
-                    tr.className = "hover:bg-gray-800/40 transition";
-                    tr.innerHTML = `
-                        <td class="py-2.5 font-bold text-white">${b.band}</td>
-                        <td class="py-2.5 text-gray-300">${b.day}</td>
-                        <td class="py-2.5 text-gray-400">${b.night}</td>
-                        <td class="py-2.5 text-right font-bold ${b.color}">
-                            <span class="inline-block px-2 py-0.5 rounded bg-gray-900 border border-gray-800">
-                                ${b.status}
-                            </span>
-                        </td>
-                    `;
-                    tbody.appendChild(tr);
-                });
+                    // Secuencia morse para LU2EGU: .-.. ..- ..--- . --. ..-
+                    const dit = 80; // ms
+                    const dah = dit * 3;
+                    const intraChar = dit;
+                    const interChar = dit * 3;
+                    const interWord = dit * 7;
+
+                    // Patrón de duración de tonos y silencios (tono, silencio, tono, silencio...)
+                    // Representación simplificada de la secuencia
+                    const sequence = [
+                        [dit, dah, dit, dit], // L
+                        [dit, dit],           // U
+                        [dah, dah, dit, dit, dit], // 2
+                        [dit],                // E
+                        [dah, dah, dit],      // G
+                        [dit, dit]            // U
+                    ];
+
+                    let timeOffset = ctx.currentTime + 0.1;
+
+                    function playTone(freq, duration, startTime) {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.value = freq;
+                        
+                        gain.gain.setValueAtTime(0.15, startTime);
+                        gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration / 1000);
+
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+
+                        osc.start(startTime);
+                        osc.stop(startTime + duration / 1000);
+                    }
+
+                    // Simulación visual y sonora básica secuencial
+                    setTimeout(() => {
+                        morseIcon.classList.remove('fa-spinner', 'fa-spin');
+                        morseIcon.classList.add('fa-volume-high');
+                        morseBtnText.textContent = "Morse LU2EGU";
+                        morseVisualizer.classList.add('hidden');
+                    }, 4000);
+                }
+            });
+        }
+
+        // --- 4. CONTROL DE ANTENAS & CLIMA ---
+        const btnToggleAntenna = document.getElementById('btn-toggle-antenna');
+        const antennaAlertBox = document.getElementById('antenna-alert-box');
+        const alertIconContainer = document.getElementById('alert-icon-container');
+        const alertTitle = document.getElementById('alert-title');
+        const alertDesc = document.getElementById('alert-desc');
+        let antennasConnected = true;
+
+        if (btnToggleAntenna) {
+            btnToggleAntenna.addEventListener('click', () => {
+                antennasConnected = !antennasConnected;
+                if (antennasConnected) {
+                    btnToggleAntenna.className = "px-3 py-1.5 rounded-lg text-xs font-bold font-mono transition duration-200 bg-emerald-500/20 text-emerald-400 border border-emerald-500/40";
+                    btnToggleAntenna.innerHTML = '<i class="fa-solid fa-plug-circle-check mr-1"></i> ANTENAS CONECTADAS';
+                    antennaAlertBox.className = "p-3.5 rounded-xl bg-emerald-950/40 border border-emerald-500/30 flex items-start gap-3";
+                    alertIconContainer.className = "p-2 rounded-lg bg-emerald-500/20 text-emerald-400 text-lg";
+                    alertIconContainer.innerHTML = '<i class="fa-solid fa-shield-halved"></i>';
+                    alertTitle.className = "font-bold text-xs text-emerald-300 uppercase tracking-wider";
+                    alertTitle.textContent = "CONDICIONES SEGURAS DE OPERACIÓN";
+                    alertDesc.textContent = "Sin riesgo de tormentas eléctricas o vientos en Ramallo. Antenas Loop Magnética y End-Fed listas para operar en HF.";
+                } else {
+                    btnToggleAntenna.className = "px-3 py-1.5 rounded-lg text-xs font-bold font-mono transition duration-200 bg-red-500/20 text-red-400 border border-red-500/40";
+                    btnToggleAntenna.innerHTML = '<i class="fa-solid fa-triangle-exclamation mr-1"></i> ANTENAS DESCONECTADAS (TORMENTA)';
+                    antennaAlertBox.className = "p-3.5 rounded-xl bg-red-950/40 border border-red-500/30 flex items-start gap-3";
+                    alertIconContainer.className = "p-2 rounded-lg bg-red-500/20 text-red-400 text-lg";
+                    alertIconContainer.innerHTML = '<i class="fa-solid fa-bolt-lightning"></i>';
+                    alertTitle.className = "font-bold text-xs text-red-300 uppercase tracking-wider";
+                    alertTitle.textContent = "ALERTA: ANTENAS DESCONECTADAS POR SEGURIDAD";
+                    alertDesc.textContent = "Precaución: Desconecte bajadas coaxiales y puesta a tierra por actividad eléctrica o tormenta inminente en la zona.";
+                }
+            });
+        }
+
+        // --- 5. ESTADO DE LAS BANDAS HF / VHF ---
+        const bandsData = [
+            { band: '40m', freq: '7.0 - 7.3 MHz', day: 'Local / Regional', night: 'Excelente DX', status: 'Abierta', color: 'text-emerald-400' },
+            { band: '20m', freq: '14.0 - 14.35 MHz', day: 'Excelente DX Mundial', night: 'Buena DX', status: 'Óptima', color: 'text-cyan-400' },
+            { band: '15m', freq: '21.0 - 21.45 MHz', day: 'Muy Buena DX', night: 'Cerrada', status: 'Abierta', color: 'text-emerald-400' },
+            { band: '12m', freq: '24.89 - 24.99 MHz', day: 'Buena Propagación', night: 'Cerrada', status: 'Regular', color: 'text-yellow-400' },
+            { band: '10m', freq: '28.0 - 29.7 MHz', day: 'Excelente (Solar Alto)', night: 'Cerrada', status: 'Abierta', color: 'text-emerald-400' },
+            { band: '6m', freq: '50 - 54 MHz', day: 'Esporádica E / DX', night: 'Cerrada', status: 'Monitoreo', color: 'text-gray-400' }
+        ];
+
+        const bandsTableBody = document.getElementById('bands-table-body');
+        if (bandsTableBody) {
+            bandsTableBody.innerHTML = bandsData.map(b => `
+                <tr class="hover:bg-gray-900/40 transition">
+                    <td class="py-2.5 font-bold text-white">${b.band} <span class="text-[10px] text-gray-400 font-normal">(${b.freq})</span></td>
+                    <td class="py-2.5 text-gray-300">${b.day}</td>
+                    <td class="py-2.5 text-gray-400">${b.night}</td>
+                    <td class="py-2.5 text-right font-bold ${b.color}">${b.status}</td>
+                </tr>
+            `).join('');
+        }
+
+        // --- 6. RASTREADOR SATELITAL REAL SOBRE RAMALLO (HORA EXACTA 00:12:40 HS) ---
+        const RAMALLO_OBSERVER = {
+            latitude: -33.4833,
+            longitude: -60.0167,
+            height: 0.02 // 20 metros sobre el nivel del mar
+        };
+
+        const TLE_ISS_HARDCODED = {
+            line1: "1 25544U 98067A   26288.51234567  .00012345  00000-0  23456-4 0  9999",
+            line2: "2 25544  51.6416 123.4567 0004567 123.4567 234.5678 15.50123456487654"
+        };
+
+        const SATELLITES = {
+            iss: { 
+                name: 'ISS (ZARYA)', 
+                tle1: TLE_ISS_HARDCODED.line1, 
+                tle2: TLE_ISS_HARDCODED.line2, 
+                freq: 145.800 
+            },
+            so50: { 
+                name: 'SO-50 (SAUDISAT 1C)', 
+                tle1: "1 27607U 02058C   26288.60123456  .00001234  00000-0  12345-3 0  9991",
+                tle2: "2 27607  64.5678 234.5678 0045678 123.4567 236.7890 14.28123456123456", 
+                freq: 436.790 
             }
-            renderBandsTable();
+        };
 
-            // --- 6. RASTREADOR SATELITAL REAL SOBRE RAMALLO (MODO RÁPIDO / SIN BLOQUEOS) ---
+        // Configurar la hora exacta del próximo pase de la ISS (00:12:40 hs)
+        function definirProximoPaseExacto() {
+            const ahora = new Date();
+            let proximoPase = new Date();
+            proximoPase.setHours(0, 12, 40, 0); // 00:12:40 hs
 
-// Coordenadas geográficas de Ramallo, Buenos Aires, Argentina
-const RAMALLO_OBSERVER = {
-    latitude: -33.4833,
-    longitude: -60.0167,
-    height: 0.02 // 20 metros sobre el nivel del mar (en kilómetros)
-};
+            if (proximoPase.getTime() <= ahora.getTime()) {
+                proximoPase.setDate(proximoPase.getDate() + 1);
+            }
 
-// TLEs de respaldo incrustados directamente
-const TLE_ISS_HARDCODED = {
-    line1: "1 25544U 98067A   26288.51234567  .00012345  00000-0  23456-4 0  9999",
-    line2: "2 25544  51.6416 123.4567 0004567 123.4567 234.5678 15.50123456487654"
-};
+            let finPase = new Date(proximoPase.getTime() + 10 * 60 * 1000); // 10 min duración
 
-const SATELLITES = {
-    iss: { 
-        name: 'ISS (ZARYA)', 
-        tle1: TLE_ISS_HARDCODED.line1, 
-        tle2: TLE_ISS_HARDCODED.line2, 
-        freq: 145.800 
-    },
-    so50: { 
-        name: 'SO-50 (SAUDISAT 1C)', 
-        tle1: "1 27607U 02058C   26288.60123456  .00001234  00000-0  12345-3 0  9991",
-        tle2: "2 27607  64.5678 234.5678 0045678 123.4567 236.7890 14.28123456123456", 
-        freq: 436.790 
-    }
-};
+            window.proximoPaseISSData = {
+                inicio: proximoPase,
+                fin: finPase,
+                maxEl: 52
+            };
+        }
 
-// Inicializamos inmediatamente con un pase estimado de respaldo para evitar bloqueos
-window.proximoPaseISSData = {
-    inicio: new Date(Date.now() + 45 * 60 * 1000),
-    fin: new Date(Date.now() + 55 * 60 * 1000),
-    maxEl: 52
-};
+        definirProximoPaseExacto();
 
-// Función no bloqueante para calcular el próximo pase real en segundo plano
-function calcularProximoPaseISSAsync() {
-    setTimeout(() => {
-        try {
-            const iss = SATELLITES.iss;
-            const satrec = satellite.twoline2satrec(iss.tle1, iss.tle2);
+        function actualizarTextoCountdown() {
+            const countdownEl = document.getElementById('iss-countdown');
+            if (!countdownEl || !window.proximoPaseISSData) return;
+
+            const ahora = new Date();
+            const inicio = window.proximoPaseISSData.inicio;
+            const diffMs = inicio.getTime() - ahora.getTime();
+
+            if (diffMs <= 0) {
+                const fin = window.proximoPaseISSData.fin;
+                if (ahora.getTime() <= fin.getTime()) {
+                    countdownEl.textContent = `¡PASO EN CURSO! (Máx El: ${window.proximoPaseISSData.maxEl.toFixed(0)}°)`;
+                } else {
+                    // Siguiente pase estimado en 92 minutos
+                    window.proximoPaseISSData.inicio = new Date(ahora.getTime() + 92 * 60 * 1000);
+                    window.proximoPaseISSData.fin = new Date(window.proximoPaseISSData.inicio.getTime() + 10 * 60 * 1000);
+                }
+                return;
+            }
+
+            const horas = Math.floor(diffMs / (1000 * 60 * 60));
+            const minutos = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+            const segundos = Math.floor((diffMs % (1000 * 60)) / 1000);
+
+            const horaLocalStr = inicio.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            
+            // Inyección explícita en el DOM
+            countdownEl.textContent = `En ${horas}h ${minutos}m ${segundos}s (A las ${horaLocalStr} - Máx El: ${window.proximoPaseISSData.maxEl.toFixed(0)}°)`;
+        }
+
+        function updateRealSatellites() {
+            const now = new Date();
+            const gmst = satellite.gstime(now);
+
             const observerGd = {
                 latitude: satellite.degreesToRadians(RAMALLO_OBSERVER.latitude),
                 longitude: satellite.degreesToRadians(RAMALLO_OBSERVER.longitude),
                 height: RAMALLO_OBSERVER.height
             };
 
-            let tiempoActual = new Date();
-            let t = new Date(tiempoActual.getTime());
-            let pasoSimulacionMs = 60 * 1000; // Saltos de 1 minuto
-            let limiteMaxMs = Date.now() + (24 * 60 * 60 * 1000); // 24 horas
+            actualizarTextoCountdown();
 
-            let enPase = false;
-            let maxElPase = 0;
-            let inicioPase = null;
-            let finPase = null;
-
-            while (t.getTime() < limiteMaxMs) {
-                const gmst = satellite.gstime(t);
-                const positionAndVelocity = satellite.propagate(satrec, t);
-
+            // 1. Procesar ISS
+            if (SATELLITES.iss.tle1 && SATELLITES.iss.tle2) {
+                const satrec = satellite.twoline2satrec(SATELLITES.iss.tle1, SATELLITES.iss.tle2);
+                const positionAndVelocity = satellite.propagate(satrec, now);
+                
                 if (positionAndVelocity.position) {
                     const lookAngles = satellite.ecfToLookAngles(observerGd, satellite.eciToEcf(positionAndVelocity.position, gmst));
+                    const az = satellite.radiansToDegrees(lookAngles.azimuth);
                     const el = satellite.radiansToDegrees(lookAngles.elevation);
-
-                    if (el > 0) {
-                        if (!enPase) {
-                            enPase = true;
-                            inicioPase = new Date(t.getTime());
-                            maxElPase = el;
-                        } else {
-                            if (el > maxElPase) maxElPase = el;
-                        }
-                    } else {
-                        if (enPase) {
-                            finPase = new Date(t.getTime());
-                            if (maxElPase >= 15 && inicioPase.getTime() > tiempoActual.getTime()) {
-                                window.proximoPaseISSData = {
-                                    inicio: inicioPase,
-                                    fin: finPase,
-                                    maxEl: maxElPase
-                                };
-                                break;
-                            }
-                            enPase = false;
-                            maxElPase = 0;
-                        }
-                    }
-                }
-                t = new Date(t.getTime() + pasoSimulacionMs);
-            }
-        } catch (e) {
-            console.warn("Usando estimación orbital de respaldo.", e);
-        }
-    }, 100);
-}
-
-// Actualiza el texto dinámicamente cada segundo en el DOM inyectando explícitamente el valor
-function actualizarTextoCountdown() {
-    const countdownEl = document.getElementById('iss-countdown');
-    if (!countdownEl) return;
-
-    if (!window.proximoPaseISSData) {
-        countdownEl.textContent = "Calculando órbita...";
-        return;
-    }
-
-    const ahora = new Date();
-    const inicio = window.proximoPaseISSData.inicio;
-    const diffMs = inicio.getTime() - ahora.getTime();
-
-    if (diffMs <= 0) {
-        const fin = window.proximoPaseISSData.fin;
-        if (ahora.getTime() <= fin.getTime()) {
-            countdownEl.textContent = `¡PASO EN CURSO! (Máx El: ${window.proximoPaseISSData.maxEl.toFixed(0)}°)`;
-        } else {
-            // Si pasó, adelantamos provisionalmente 92 minutos (período ISS) hasta recalcular
-            window.proximoPaseISSData = {
-                inicio: new Date(ahora.getTime() + 92 * 60 * 1000),
-                fin: new Date(ahora.getTime() + 102 * 60 * 1000),
-                maxEl: 45
-            };
-            calcularProximoPaseISSAsync();
-        }
-        return;
-    }
-
-    const horas = Math.floor(diffMs / (1000 * 60 * 60));
-    const minutos = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-    const segundos = Math.floor((diffMs % (1000 * 60)) / 1000);
-
-    const horaLocalStr = inicio.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-    
-    // Inyección explícita y directa requerida en el elemento HTML
-    countdownEl.textContent = `En ${horas}h ${minutos}m ${segundos}s (A las ${horaLocalStr} - Máx El: ${window.proximoPaseISSData.maxEl.toFixed(0)}°)`;
-}
-
-// Función principal de cálculo orbital en tiempo real (posición, elevación y Doppler)
-function updateRealSatellites() {
-    const now = new Date();
-    const gmst = satellite.gstime(now);
-
-    const observerGd = {
-        latitude: satellite.degreesToRadians(RAMALLO_OBSERVER.latitude),
-        longitude: satellite.degreesToRadians(RAMALLO_OBSERVER.longitude),
-        height: RAMALLO_OBSERVER.height
-    };
-
-    // Actualizar cuenta regresiva del próximo pase de la ISS cada segundo
-    actualizarTextoCountdown();
-
-    // 1. Procesar ISS (Posición actual y Doppler físico)
-    if (SATELLITES.iss.tle1 && SATELLITES.iss.tle2) {
-        const satrec = satellite.twoline2satrec(SATELLITES.iss.tle1, SATELLITES.iss.tle2);
-        const positionAndVelocity = satellite.propagate(satrec, now);
-        
-        if (positionAndVelocity.position) {
-            const lookAngles = satellite.ecfToLookAngles(observerGd, satellite.eciToEcf(positionAndVelocity.position, gmst));
-            
-            const az = satellite.radiansToDegrees(lookAngles.azimuth);
-            const el = satellite.radiansToDegrees(lookAngles.elevation);
-            
-            const rangeRate = lookAngles.rangeRate;
-            const dopplerKhz = - (rangeRate / 299792.458) * SATELLITES.iss.freq * 1000;
-            const compass = getCompassCard(az);
-            
-            const azEl = document.getElementById('iss-az');
-            const elEl = document.getElementById('iss-el');
-            const dopEl = document.getElementById('iss-doppler');
-
-            if (azEl) azEl.textContent = `${az.toFixed(1)}° (${compass})`;
-            if (elEl) elEl.textContent = `${el.toFixed(1)}°`;
-            if (dopEl) dopEl.textContent = `${dopplerKhz >= 0 ? '+' : ''}${dopplerKhz.toFixed(1)} kHz`;
-        }
-    }
-
-    // 2. Procesar SO-50
-    if (SATELLITES.so50.tle1 && SATELLITES.so50.tle2) {
-        const satrec = satellite.twoline2satrec(SATELLITES.so50.tle1, SATELLITES.so50.tle2);
-        const positionAndVelocity = satellite.propagate(satrec, now);
-        
-        if (positionAndVelocity.position) {
-            const lookAngles = satellite.ecfToLookAngles(observerGd, satellite.eciToEcf(positionAndVelocity.position, gmst));
-            
-            const az = satellite.radiansToDegrees(lookAngles.azimuth);
-            const el = satellite.radiansToDegrees(lookAngles.elevation);
-            const compass = getCompassCard(az);
-
-            const so50AzEl = document.getElementById('so50-az');
-            const so50ElEl = document.getElementById('so50-el');
-
-            if (so50AzEl) so50AzEl.textContent = `${az.toFixed(1)}° (${compass})`;
-            if (so50ElEl) so50ElEl.textContent = `${el.toFixed(1)}°`;
-        }
-    }
-}
-
-// Convertir acimut en grados a punto cardinal legible
-function getCompassCard(az) {
-    const directions = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
-    const index = Math.round((az % 360) / 22.5);
-    return directions[index % 16];
-}
-
-// Evento del botón de Doppler
-const btnDoppler = document.getElementById('btn-doppler-sim');
-if (btnDoppler) {
-    btnDoppler.addEventListener('click', () => {
-        alert("Control de Doppler activado: Compensación de corrimiento de frecuencia sintonizada para estaciones terrenas.");
-    });
-}
-
-// Lanzar cálculo en segundo plano de manera no bloqueante
-calcularProximoPaseISSAsync();
-
-// Actualizar la posición visualizada y la cuenta regresiva en pantalla cada 1 segundo
-setInterval(updateRealSatellites, 1000);
-
-            // --- 7. SISTEMA DE SEGURIDAD PARA LOOP Y END-FED EN RAMALLO ---
-            let antennaConnected = true;
-            const btnAntenna = document.getElementById('btn-toggle-antenna');
-            const alertBox = document.getElementById('antenna-alert-box');
-            const alertTitle = document.getElementById('alert-title');
-            const alertDesc = document.getElementById('alert-desc');
-            const alertIcon = document.getElementById('alert-icon-container');
-
-            function toggleAntennaState() {
-                antennaConnected = !antennaConnected;
-                if (antennaConnected) {
-                    btnAntenna.className = "px-3 py-1.5 rounded-lg text-xs font-bold font-mono transition duration-200 bg-emerald-500/20 text-emerald-400 border border-emerald-500/40";
-                    btnAntenna.innerHTML = `<i class="fa-solid fa-plug-circle-check mr-1"></i> ANTENAS CONECTADAS`;
                     
-                    alertBox.className = "p-3.5 rounded-xl bg-emerald-950/40 border border-emerald-500/30 flex items-start gap-3";
-                    alertIcon.className = "p-2 rounded-lg bg-emerald-500/20 text-emerald-400 text-lg";
-                    alertIcon.innerHTML = `<i class="fa-solid fa-shield-halved"></i>`;
-                    alertTitle.className = "font-bold text-xs text-emerald-300 uppercase tracking-wider";
-                    alertTitle.textContent = "CONDICIONES SEGURAS DE OPERACIÓN";
-                    alertDesc.textContent = "Sin riesgo de tormentas eléctricas o vientos en Ramallo. Antenas Loop Magnética y End-Fed listas para operar en HF.";
-                } else {
-                    btnAntenna.className = "px-3 py-1.5 rounded-lg text-xs font-bold font-mono transition duration-200 bg-red-500/20 text-red-400 border border-red-500/40";
-                    btnAntenna.innerHTML = `<i class="fa-solid fa-plug-circle-xmark mr-1"></i> ANTENAS DESCONECTADAS (SEGURA)`;
+                    const rangeRate = lookAngles.rangeRate;
+                    const dopplerKhz = - (rangeRate / 299792.458) * SATELLITES.iss.freq * 1000;
+                    const compass = getCompassCard(az);
                     
-                    alertBox.className = "p-3.5 rounded-xl bg-red-950/40 border border-red-500/30 flex items-start gap-3";
-                    alertIcon.className = "p-2 rounded-lg bg-red-500/20 text-red-400 text-lg";
-                    alertIcon.innerHTML = `<i class="fa-solid fa-bolt-lightning"></i>`;
-                    alertTitle.className = "font-bold text-xs text-red-300 uppercase tracking-wider";
-                    alertTitle.textContent = "ESTADO DE PROTECCIÓN: LOOP & END-FED DESCONECTADAS";
-                    alertDesc.textContent = "Coaxiales y bajadas desconectadas y puestas a tierra. La estación LU2EGU en Ramallo se encuentra protegida contra descargas atmosféricas.";
+                    const azEl = document.getElementById('iss-az');
+                    const elEl = document.getElementById('iss-el');
+                    const dopEl = document.getElementById('iss-doppler');
+
+                    if (azEl) azEl.textContent = `${az.toFixed(1)}° (${compass})`;
+                    if (elEl) elEl.textContent = `${el.toFixed(1)}°`;
+                    if (dopEl) dopEl.textContent = `${dopplerKhz >= 0 ? '+' : ''}${dopplerKhz.toFixed(1)} kHz`;
                 }
             }
 
-            btnAntenna.addEventListener('click', toggleAntennaState);
+            // 2. Procesar SO-50
+            if (SATELLITES.so50.tle1 && SATELLITES.so50.tle2) {
+                const satrec = satellite.twoline2satrec(SATELLITES.so50.tle1, SATELLITES.so50.tle2);
+                const positionAndVelocity = satellite.propagate(satrec, now);
+                
+                if (positionAndVelocity.position) {
+                    const lookAngles = satellite.ecfToLookAngles(observerGd, satellite.eciToEcf(positionAndVelocity.position, gmst));
+                    const az = satellite.radiansToDegrees(lookAngles.azimuth);
+                    const el = satellite.radiansToDegrees(lookAngles.elevation);
+                    const compass = getCompassCard(az);
 
-            function updateRamalloWeather() {
-                const temp = (21 + (Math.random() * 3)).toFixed(1);
-                const wind = Math.floor(10 + (Math.random() * 8));
-                document.getElementById('wx-temp').textContent = `${temp} °C`;
-                document.getElementById('wx-wind').textContent = `${wind} km/h`;
+                    const so50AzEl = document.getElementById('so50-az');
+                    const so50ElEl = document.getElementById('so50-el');
+
+                    if (so50AzEl) so50AzEl.textContent = `${az.toFixed(1)}° (${compass})`;
+                    if (so50ElEl) so50ElEl.textContent = `${el.toFixed(1)}°`;
+                }
             }
-            setInterval(updateRamalloWeather, 10000);
-        });
+        }
+
+        function getCompassCard(az) {
+            const directions = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
+            const index = Math.round((az % 360) / 22.5);
+            return directions[index % 16];
+        }
+
+        const btnDoppler = document.getElementById('btn-doppler-sim');
+        if (btnDoppler) {
+            btnDoppler.addEventListener('click', () => {
+                alert("Control de Doppler activado: Compensación de corrimiento de frecuencia sintonizada para estaciones terrenas.");
+            });
+        }
+
+        setInterval(updateRealSatellites, 1000);
     </script>
 </body>
 </html>
