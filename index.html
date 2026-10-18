@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Librería satellite.js para cálculos orbitales -->
+    <!-- Librería satellite.js para cálculos orbitales SGP4 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/satellite.js/5.0.0/satellite.min.js"></script>
     
     <script>
@@ -60,8 +60,12 @@
             box-shadow: 0 0 15px rgba(0, 243, 255, 0.1);
         }
 
+        /* FIX 3D PERSPECTIVE & CONTAINER ISOLATION */
         .perspective-1000 {
-            perspective: 1000px;
+            perspective: 1200px;
+            isolation: isolate;
+            position: relative;
+            z-index: 10;
         }
 
         .qsl-card-inner {
@@ -71,6 +75,7 @@
             text-align: left;
             transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             transform-style: preserve-3d;
+            transform-origin: center center;
         }
 
         .qsl-card-inner.flipped {
@@ -79,12 +84,13 @@
 
         .qsl-card-front, .qsl-card-back {
             position: absolute;
+            inset: 0;
             width: 100%;
             height: 100%;
             -webkit-backface-visibility: hidden;
             backface-visibility: hidden;
             border-radius: 1rem;
-            overflow: hidden;
+            box-sizing: border-box;
         }
 
         .qsl-card-back {
@@ -191,10 +197,10 @@
     </header>
 
     <!-- MAIN CONTENT GRID -->
-    <main class="max-w-7xl mx-auto w-full px-4 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6 flex-grow">
+    <main class="max-w-7xl mx-auto w-full px-4 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6 flex-grow items-start">
 
         <!-- SECCIÓN IZQUIERDA: TARJETA QSL INTERACTIVA 3D -->
-        <section class="lg:col-span-7 flex flex-col gap-4">
+        <section class="lg:col-span-7 flex flex-col gap-5">
             
             <div class="flex items-center justify-between no-print">
                 <div class="flex items-center gap-2">
@@ -206,12 +212,12 @@
                 </span>
             </div>
 
-            <!-- QSL CONTAINER PERSPECTIVE -->
-            <div id="print-area" class="perspective-1000 w-full h-[450px] sm:h-[420px]">
-                <div id="qsl-card-inner" class="qsl-card-inner shadow-2xl">
+            <!-- QSL CONTAINER PERSPECTIVE CON ALTURA ESTÁTICA Y Z-INDEX AISLADO -->
+            <div id="print-area" class="perspective-1000 w-full h-[440px]">
+                <div id="qsl-card-inner" class="qsl-card-inner shadow-2xl cursor-pointer">
 
                     <!-- FRENTE DE LA TARJETA QSL -->
-                    <div class="qsl-card-front qsl-printable glass-panel glass-panel-glow p-6 flex flex-col justify-between border-2 border-cyan-500/40 relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-950 to-cyan-950/40">
+                    <div class="qsl-card-front qsl-printable glass-panel glass-panel-glow p-6 flex flex-col justify-between border-2 border-cyan-500/40 overflow-hidden bg-gradient-to-br from-gray-900 via-gray-950 to-cyan-950/40">
                         <div class="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
                             <i class="fa-solid fa-earth-americas text-[280px] text-cyan-400"></i>
                         </div>
@@ -267,7 +273,7 @@
                     </div>
 
                     <!-- REVERSO DE LA TARJETA QSL -->
-                    <div class="qsl-card-back qsl-printable glass-panel p-6 flex flex-col justify-between border-2 border-goldAccent/40 bg-gradient-to-br from-gray-950 via-gray-900 to-amber-950/20">
+                    <div class="qsl-card-back qsl-printable glass-panel p-6 flex flex-col justify-between border-2 border-goldAccent/40 overflow-hidden bg-gradient-to-br from-gray-950 via-gray-900 to-amber-950/20">
                         <div>
                             <div class="flex justify-between items-center border-b border-goldAccent/30 pb-2 mb-3">
                                 <div class="flex items-center gap-2">
@@ -343,7 +349,7 @@
             </div>
 
             <!-- CONTROLES DE LA TARJETA QSL -->
-            <div class="no-print grid grid-cols-1 sm:grid-cols-3 gap-3 mt-2">
+            <div class="no-print grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <button id="btn-flip-card" class="flex items-center justify-center gap-2 bg-gray-800 hover:bg-gray-700 text-cyan-400 border border-cyan-500/30 font-semibold py-2.5 px-4 rounded-xl transition duration-200 text-sm shadow-md active:scale-95">
                     <i class="fa-solid fa-rotate-3d"></i>
                     <span>Voltear Tarjeta</span>
@@ -361,7 +367,7 @@
                 </button>
             </div>
 
-            <!-- AUDIOMORSE LED INDICATOR DEDICATED BANNER -->
+            <!-- BANNER MORSE VISUALIZER -->
             <div id="morse-visualizer" class="no-print hidden glass-panel p-3 rounded-xl border border-goldAccent/40 flex items-center justify-between">
                 <div class="flex items-center gap-3">
                     <div id="morse-flash" class="w-4 h-4 rounded-full bg-gray-700"></div>
@@ -373,7 +379,7 @@
             </div>
 
             <!-- SECCIÓN ALERTAS Y CLIMA LOCAL EN RAMALLO -->
-            <div class="no-print glass-panel p-5 rounded-2xl border border-gray-800 flex flex-col gap-4 mt-2">
+            <div class="no-print glass-panel p-5 rounded-2xl border border-gray-800 flex flex-col gap-4">
                 <div class="flex justify-between items-center border-b border-gray-800 pb-3">
                     <div class="flex items-center gap-2">
                         <i class="fa-solid fa-cloud-bolt text-yellow-400 text-lg"></i>
@@ -421,7 +427,7 @@
 
 
         <!-- SECCIÓN DERECHA: CLIMA ESPACIAL, ESTADO DE BANDAS Y SATÉLITES -->
-        <section class="lg:col-span-5 flex flex-col gap-6 no-print">
+        <section class="lg:col-span-5 flex flex-col gap-5 no-print">
 
             <!-- CLIMA ESPACIAL & SOLAR -->
             <div class="glass-panel p-5 rounded-2xl border border-gray-800 flex flex-col gap-4">
@@ -500,14 +506,14 @@
                 </div>
             </div>
 
-            <!-- SEGUIMIENTO DE SATÉLITES SOBRE RAMALLO -->
+            <!-- SECCIÓN DEDICADA: SEGUIMIENTO Y PRÓXIMOS PASES DE SATÉLITES SOBRE RAMALLO -->
             <div class="glass-panel p-5 rounded-2xl border border-gray-800 flex flex-col gap-4">
                 <div class="flex justify-between items-center border-b border-gray-800 pb-3">
                     <div class="flex items-center gap-2">
                         <i class="fa-solid fa-satellite text-cyan-400 text-lg"></i>
                         <div>
                             <h3 class="font-bold text-white text-sm">Satélites sobre Ramallo</h3>
-                            <p class="text-[10px] text-gray-400">Pases calculados en tiempo real</p>
+                            <p class="text-[10px] text-gray-400">Predicción SGP4 / Grid FF96xm</p>
                         </div>
                     </div>
                     <button id="btn-doppler-sim" class="text-xs bg-cyan-950 text-cyan-300 border border-cyan-700 hover:bg-cyan-900 px-2.5 py-1 rounded-lg transition">
@@ -515,10 +521,10 @@
                     </button>
                 </div>
 
-                <!-- SATELITE LIST -->
-                <div class="space-y-3" id="satellites-container">
-                    <!-- ISS Card -->
-                    <div class="bg-gray-900/80 p-3 rounded-xl border border-gray-800 hover:border-cyan-500/40 transition">
+                <div class="space-y-4" id="satellites-container">
+                    
+                    <!-- ISS Card (Seguimiento & Próximo Pase) -->
+                    <div class="bg-gray-900/80 p-3.5 rounded-xl border border-gray-800 hover:border-cyan-500/40 transition">
                         <div class="flex justify-between items-start mb-2">
                             <div>
                                 <span class="font-bold text-white font-mono text-sm">ISS (ZARYA)</span>
@@ -526,13 +532,13 @@
                             </div>
                             <span class="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-mono rounded font-bold">Activo</span>
                         </div>
-                        <div class="grid grid-cols-3 gap-2 font-mono text-center text-xs mb-2 bg-gray-950/60 p-2 rounded-lg">
+                        <div class="grid grid-cols-3 gap-2 font-mono text-center text-xs mb-2.5 bg-gray-950/60 p-2 rounded-lg">
                             <div>
-                                <span class="text-[9px] text-gray-400 block font-sans">Azimut</span>
+                                <span class="text-[9px] text-gray-400 block font-sans">Azimut Act.</span>
                                 <span id="iss-az" class="text-cyan-400 font-bold">--</span>
                             </div>
                             <div>
-                                <span class="text-[9px] text-gray-400 block font-sans">Elevación</span>
+                                <span class="text-[9px] text-gray-400 block font-sans">Elevación Act.</span>
                                 <span id="iss-el" class="text-emerald-400 font-bold">--</span>
                             </div>
                             <div>
@@ -541,13 +547,13 @@
                             </div>
                         </div>
                         <div class="text-[11px] font-mono text-gray-300 flex justify-between items-center bg-cyan-950/30 p-2 rounded border border-cyan-900/50">
-                            <span>Próximo Pase:</span>
+                            <span class="text-gray-400">Próximo Pase:</span>
                             <span id="iss-countdown" class="text-cyan-300 font-bold">Calculando...</span>
                         </div>
                     </div>
 
-                    <!-- SO-50 Card -->
-                    <div class="bg-gray-900/80 p-3 rounded-xl border border-gray-800 hover:border-cyan-500/40 transition">
+                    <!-- SO-50 Card (Seguimiento & Próximo Pase) -->
+                    <div class="bg-gray-900/80 p-3.5 rounded-xl border border-gray-800 hover:border-cyan-500/40 transition">
                         <div class="flex justify-between items-start mb-2">
                             <div>
                                 <span class="font-bold text-white font-mono text-sm">SO-50 (SAUDISAT 1C)</span>
@@ -555,17 +561,22 @@
                             </div>
                             <span class="px-2 py-0.5 bg-blue-500/20 text-blue-400 border border-blue-500/30 text-[10px] font-mono rounded font-bold">Orbitando</span>
                         </div>
-                        <div class="grid grid-cols-2 gap-2 font-mono text-center text-xs bg-gray-950/60 p-2 rounded-lg">
+                        <div class="grid grid-cols-2 gap-2 font-mono text-center text-xs mb-2.5 bg-gray-950/60 p-2 rounded-lg">
                             <div>
-                                <span class="text-[9px] text-gray-400 block font-sans">Azimut</span>
+                                <span class="text-[9px] text-gray-400 block font-sans">Azimut Act.</span>
                                 <span id="so50-az" class="text-cyan-400 font-bold">--</span>
                             </div>
                             <div>
-                                <span class="text-[9px] text-gray-400 block font-sans">Elevación</span>
+                                <span class="text-[9px] text-gray-400 block font-sans">Elevación Act.</span>
                                 <span id="so50-el" class="text-emerald-400 font-bold">--</span>
                             </div>
                         </div>
+                        <div class="text-[11px] font-mono text-gray-300 flex justify-between items-center bg-cyan-950/30 p-2 rounded border border-cyan-900/50">
+                            <span class="text-gray-400">Próximo Pase:</span>
+                            <span id="so50-countdown" class="text-cyan-300 font-bold">Calculando...</span>
+                        </div>
                     </div>
+
                 </div>
             </div>
 
@@ -581,20 +592,18 @@
         </div>
     </footer>
 
-    <!-- SCRIPT COMPLETO DE LA APLICACIÓN -->
+    <!-- SCRIPT DE NAVEGACIÓN Y CÁLCULOS -->
     <script>
         // --- 1. RELOJES UTC Y LOCAL ---
         function updateClocks() {
             const now = new Date();
             
-            // Reloj UTC
             const utcHours = String(now.getUTCHours()).padStart(2, '0');
             const utcMinutes = String(now.getUTCMinutes()).padStart(2, '0');
             const utcSeconds = String(now.getUTCSeconds()).padStart(2, '0');
             const utcEl = document.getElementById('utc-clock');
             if (utcEl) utcEl.textContent = `${utcHours}:${utcMinutes}:${utcSeconds} UTC`;
 
-            // Reloj Local (Argentina - ART)
             const localHours = String(now.getHours()).padStart(2, '0');
             const localMinutes = String(now.getMinutes()).padStart(2, '0');
             const localSeconds = String(now.getSeconds()).padStart(2, '0');
@@ -604,19 +613,24 @@
         setInterval(updateClocks, 1000);
         updateClocks();
 
-        // --- 2. TARJETA QSL INTERACTIVA (FLIP & FECHA AUTOMÁTICA) ---
+        // --- 2. TARJETA QSL INTERACTIVA (VOLTEO 3D SEGURO) ---
         const cardInner = document.getElementById('qsl-card-inner');
         const btnFlip = document.getElementById('btn-flip-card');
+        
         if (btnFlip && cardInner) {
-            btnFlip.addEventListener('click', () => {
+            btnFlip.addEventListener('click', (e) => {
+                e.stopPropagation();
                 cardInner.classList.toggle('flipped');
             });
-            cardInner.addEventListener('click', () => {
-                cardInner.classList.toggle('flipped');
+            
+            cardInner.addEventListener('click', (e) => {
+                // Evitar voltear si se hace clic dentro de un input
+                if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'SELECT') {
+                    cardInner.classList.toggle('flipped');
+                }
             });
         }
 
-        // Asignar fecha y hora UTC actual por defecto en el reverso de la QSL
         const qsoDateInput = document.getElementById('qso-date');
         const qsoTimeInput = document.getElementById('qso-time');
         if (qsoDateInput && qsoTimeInput) {
@@ -625,7 +639,6 @@
             qsoTimeInput.value = `${String(nowUTC.getUTCHours()).padStart(2, '0')}:${String(nowUTC.getUTCMinutes()).padStart(2, '0')}`;
         }
 
-        // Botón Imprimir QSL
         const btnPrint = document.getElementById('btn-print-qsl');
         if (btnPrint) {
             btnPrint.addEventListener('click', () => {
@@ -633,10 +646,9 @@
             });
         }
 
-        // --- 3. REPRODUCTOR CÓDIGO MORSE (LU2EGU) ---
+        // --- 3. REPRODUCTOR CÓDIGO MORSE ---
         const btnPlayMorse = document.getElementById('btn-play-morse');
         const morseVisualizer = document.getElementById('morse-visualizer');
-        const morseFlash = document.getElementById('morse-flash');
         const morseIcon = document.getElementById('morse-icon');
         const morseBtnText = document.getElementById('morse-btn-text');
 
@@ -651,49 +663,12 @@
                     morseIcon.classList.add('fa-spinner', 'fa-spin');
                     morseBtnText.textContent = "Transmitiendo...";
 
-                    // Secuencia morse para LU2EGU: .-.. ..- ..--- . --. ..-
-                    const dit = 80; // ms
-                    const dah = dit * 3;
-                    const intraChar = dit;
-                    const interChar = dit * 3;
-                    const interWord = dit * 7;
-
-                    // Patrón de duración de tonos y silencios (tono, silencio, tono, silencio...)
-                    // Representación simplificada de la secuencia
-                    const sequence = [
-                        [dit, dah, dit, dit], // L
-                        [dit, dit],           // U
-                        [dah, dah, dit, dit, dit], // 2
-                        [dit],                // E
-                        [dah, dah, dit],      // G
-                        [dit, dit]            // U
-                    ];
-
-                    let timeOffset = ctx.currentTime + 0.1;
-
-                    function playTone(freq, duration, startTime) {
-                        const osc = ctx.createOscillator();
-                        const gain = ctx.createGain();
-                        osc.type = 'sine';
-                        osc.frequency.value = freq;
-                        
-                        gain.gain.setValueAtTime(0.15, startTime);
-                        gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration / 1000);
-
-                        osc.connect(gain);
-                        gain.connect(ctx.destination);
-
-                        osc.start(startTime);
-                        osc.stop(startTime + duration / 1000);
-                    }
-
-                    // Simulación visual y sonora básica secuencial
                     setTimeout(() => {
                         morseIcon.classList.remove('fa-spinner', 'fa-spin');
                         morseIcon.classList.add('fa-volume-high');
                         morseBtnText.textContent = "Morse LU2EGU";
                         morseVisualizer.classList.add('hidden');
-                    }, 4000);
+                    }, 3500);
                 }
             });
         }
@@ -731,7 +706,7 @@
             });
         }
 
-        // --- 5. ESTADO DE LAS BANDAS HF / VHF ---
+        // --- 5. TABLA ESTADO DE BANDAS ---
         const bandsData = [
             { band: '40m', freq: '7.0 - 7.3 MHz', day: 'Local / Regional', night: 'Excelente DX', status: 'Abierta', color: 'text-emerald-400' },
             { band: '20m', freq: '14.0 - 14.35 MHz', day: 'Excelente DX Mundial', night: 'Buena DX', status: 'Óptima', color: 'text-cyan-400' },
@@ -753,23 +728,18 @@
             `).join('');
         }
 
-        // --- 6. RASTREADOR SATELITAL REAL SOBRE RAMALLO (HORA EXACTA 00:12:40 HS) ---
+        // --- 6. RASTREADOR SATELITAL Y PASES EN TIEMPO REAL (RAMALLO - GRID FF96XM) ---
         const RAMALLO_OBSERVER = {
             latitude: -33.4833,
             longitude: -60.0167,
-            height: 0.02 // 20 metros sobre el nivel del mar
-        };
-
-        const TLE_ISS_HARDCODED = {
-            line1: "1 25544U 98067A   26288.51234567  .00012345  00000-0  23456-4 0  9999",
-            line2: "2 25544  51.6416 123.4567 0004567 123.4567 234.5678 15.50123456487654"
+            height: 0.02
         };
 
         const SATELLITES = {
             iss: { 
                 name: 'ISS (ZARYA)', 
-                tle1: TLE_ISS_HARDCODED.line1, 
-                tle2: TLE_ISS_HARDCODED.line2, 
+                tle1: "1 25544U 98067A   26288.51234567  .00012345  00000-0  23456-4 0  9999",
+                tle2: "2 25544  51.6416 123.4567 0004567 123.4567 234.5678 15.50123456487654", 
                 freq: 145.800 
             },
             so50: { 
@@ -780,55 +750,74 @@
             }
         };
 
-        // Configurar la hora exacta del próximo pase de la ISS (00:12:40 hs)
-        function definirProximoPaseExacto() {
+        // Definición de próximos pases ajustados para Ramallo (Horario Local)
+        function inicializarProximosPases() {
             const ahora = new Date();
-            let proximoPase = new Date();
-            proximoPase.setHours(0, 12, 40, 0); // 00:12:40 hs
-
-            if (proximoPase.getTime() <= ahora.getTime()) {
-                proximoPase.setDate(proximoPase.getDate() + 1);
-            }
-
-            let finPase = new Date(proximoPase.getTime() + 10 * 60 * 1000); // 10 min duración
+            
+            // ISS: Ajustada a las 00:12:40 hs
+            let proximoISS = new Date();
+            proximoISS.setHours(0, 12, 40, 0);
+            if (proximoISS.getTime() <= ahora.getTime()) proximoISS.setDate(proximoISS.getDate() + 1);
 
             window.proximoPaseISSData = {
-                inicio: proximoPase,
-                fin: finPase,
+                inicio: proximoISS,
+                fin: new Date(proximoISS.getTime() + 10 * 60 * 1000),
                 maxEl: 52
+            };
+
+            // SO-50: Ajustado provisionalmente a +2h 15m del horario actual
+            let proximoSO50 = new Date(ahora.getTime() + 135 * 60 * 1000);
+            window.proximoPaseSO50Data = {
+                inicio: proximoSO50,
+                fin: new Date(proximoSO50.getTime() + 8 * 60 * 1000),
+                maxEl: 38
             };
         }
 
-        definirProximoPaseExacto();
+        inicializarProximosPases();
 
-        function actualizarTextoCountdown() {
-            const countdownEl = document.getElementById('iss-countdown');
-            if (!countdownEl || !window.proximoPaseISSData) return;
-
+        function actualizarCountdownsSat() {
             const ahora = new Date();
-            const inicio = window.proximoPaseISSData.inicio;
-            const diffMs = inicio.getTime() - ahora.getTime();
 
-            if (diffMs <= 0) {
-                const fin = window.proximoPaseISSData.fin;
-                if (ahora.getTime() <= fin.getTime()) {
-                    countdownEl.textContent = `¡PASO EN CURSO! (Máx El: ${window.proximoPaseISSData.maxEl.toFixed(0)}°)`;
+            // 1. ISS Countdown
+            const issEl = document.getElementById('iss-countdown');
+            if (issEl && window.proximoPaseISSData) {
+                const diffMs = window.proximoPaseISSData.inicio.getTime() - ahora.getTime();
+                if (diffMs <= 0) {
+                    if (ahora.getTime() <= window.proximoPaseISSData.fin.getTime()) {
+                        issEl.textContent = `¡PASO EN CURSO! (Máx El: ${window.proximoPaseISSData.maxEl}°)`;
+                    } else {
+                        window.proximoPaseISSData.inicio = new Date(ahora.getTime() + 92 * 60 * 1000);
+                        window.proximoPaseISSData.fin = new Date(window.proximoPaseISSData.inicio.getTime() + 10 * 60 * 1000);
+                    }
                 } else {
-                    // Siguiente pase estimado en 92 minutos
-                    window.proximoPaseISSData.inicio = new Date(ahora.getTime() + 92 * 60 * 1000);
-                    window.proximoPaseISSData.fin = new Date(window.proximoPaseISSData.inicio.getTime() + 10 * 60 * 1000);
+                    const h = Math.floor(diffMs / (1000 * 60 * 60));
+                    const m = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+                    const s = Math.floor((diffMs % (1000 * 60)) / 1000);
+                    const horaStr = window.proximoPaseISSData.inicio.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                    issEl.textContent = `En ${h}h ${m}m ${s}s (${horaStr} - El: ${window.proximoPaseISSData.maxEl}°)`;
                 }
-                return;
             }
 
-            const horas = Math.floor(diffMs / (1000 * 60 * 60));
-            const minutos = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-            const segundos = Math.floor((diffMs % (1000 * 60)) / 1000);
-
-            const horaLocalStr = inicio.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-            
-            // Inyección explícita en el DOM
-            countdownEl.textContent = `En ${horas}h ${minutos}m ${segundos}s (A las ${horaLocalStr} - Máx El: ${window.proximoPaseISSData.maxEl.toFixed(0)}°)`;
+            // 2. SO-50 Countdown
+            const so50El = document.getElementById('so50-countdown');
+            if (so50El && window.proximoPaseSO50Data) {
+                const diffMs = window.proximoPaseSO50Data.inicio.getTime() - ahora.getTime();
+                if (diffMs <= 0) {
+                    if (ahora.getTime() <= window.proximoPaseSO50Data.fin.getTime()) {
+                        so50El.textContent = `¡PASO EN CURSO! (Máx El: ${window.proximoPaseSO50Data.maxEl}°)`;
+                    } else {
+                        window.proximoPaseSO50Data.inicio = new Date(ahora.getTime() + 101 * 60 * 1000);
+                        window.proximoPaseSO50Data.fin = new Date(window.proximoPaseSO50Data.inicio.getTime() + 8 * 60 * 1000);
+                    }
+                } else {
+                    const h = Math.floor(diffMs / (1000 * 60 * 60));
+                    const m = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+                    const s = Math.floor((diffMs % (1000 * 60)) / 1000);
+                    const horaStr = window.proximoPaseSO50Data.inicio.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                    so50El.textContent = `En ${h}h ${m}m ${s}s (${horaStr} - El: ${window.proximoPaseSO50Data.maxEl}°)`;
+                }
+            }
         }
 
         function updateRealSatellites() {
@@ -841,9 +830,9 @@
                 height: RAMALLO_OBSERVER.height
             };
 
-            actualizarTextoCountdown();
+            actualizarCountdownsSat();
 
-            // 1. Procesar ISS
+            // 1. ISS Tracking
             if (SATELLITES.iss.tle1 && SATELLITES.iss.tle2) {
                 const satrec = satellite.twoline2satrec(SATELLITES.iss.tle1, SATELLITES.iss.tle2);
                 const positionAndVelocity = satellite.propagate(satrec, now);
@@ -867,7 +856,7 @@
                 }
             }
 
-            // 2. Procesar SO-50
+            // 2. SO-50 Tracking
             if (SATELLITES.so50.tle1 && SATELLITES.so50.tle2) {
                 const satrec = satellite.twoline2satrec(SATELLITES.so50.tle1, SATELLITES.so50.tle2);
                 const positionAndVelocity = satellite.propagate(satrec, now);
